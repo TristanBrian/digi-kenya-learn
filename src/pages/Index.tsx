@@ -1,6 +1,11 @@
 import { Navigation } from "@/components/ui/navigation";
 import { HeroSection } from "@/components/hero-section";
-import { HighlightsSection } from "@/components/highlights-section";
+import { QuickIntroSection } from "@/components/sections/quick-intro";
+import { WhyChooseUsSection } from "@/components/sections/why-choose-us";
+import { StatisticsBar } from "@/components/sections/statistics-bar";
+import { HowItWorksSection } from "@/components/sections/how-it-works";
+import { TestimonialsSection } from "@/components/sections/testimonials";
+import { LatestNewsSection } from "@/components/sections/latest-news";
 import { CTASection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 
@@ -10,7 +15,12 @@ const Index = () => {
       <Navigation />
       <main>
         <HeroSection />
-        <HighlightsSection />
+        <QuickIntroSection />
+        <WhyChooseUsSection />
+        <StatisticsBar />
+        <HowItWorksSection />
+        <TestimonialsSection />
+        <LatestNewsSection />
         <CTASection />
       </main>
       <Footer />
