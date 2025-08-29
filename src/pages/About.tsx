@@ -1,86 +1,77 @@
 import { Navigation } from "@/components/ui/navigation";
 import { Footer } from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Target, Eye, Award } from "lucide-react";
+import { GraduationCap, Heart, Users, Award } from "lucide-react";
+
+const teamMembers = [
+  {
+    name: "Mrs. Sarah Wanjiku",
+    role: "Headteacher",
+    bio: "15+ years in primary education, passionate about holistic child development",
+    image: "/api/placeholder/150/150"
+  },
+  {
+    name: "Mr. John Kariuki",
+    role: "Deputy Head",
+    bio: "Mathematics specialist with expertise in curriculum development",
+    image: "/api/placeholder/150/150"
+  },
+  {
+    name: "Ms. Grace Muthoni",
+    role: "Head of ICT",
+    bio: "Computer science graduate, leading digital learning initiatives",
+    image: "/api/placeholder/150/150"
+  }
+];
 
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-subtle">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
-              About Our School
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Established in 2009, we have been dedicated to providing quality education 
-              that nurtures academic excellence, character development, and leadership skills.
-            </p>
+        <section className="py-16 bg-gradient-hero">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
+                About [SCHOOL_NAME]
+              </h1>
+              <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
+                Discover our mission, values, and the dedicated team committed to your child's success
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* Mission & Vision */}
-        <section className="py-16">
+        {/* Headteacher Welcome */}
+        <section className="py-16 bg-background">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="p-8 bg-primary/5 border-primary/20">
-                <CardContent className="p-0">
-                  <div className="flex items-center mb-4">
-                    <Target className="h-8 w-8 text-primary mr-3" />
-                    <h2 className="font-display text-2xl font-bold text-primary">Our Mission</h2>
+            <Card className="shadow-card border-0">
+              <CardContent className="p-8 md:p-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                  <div className="lg:col-span-1">
+                    <div className="w-48 h-48 mx-auto bg-muted rounded-full flex items-center justify-center">
+                      <GraduationCap className="h-24 w-24 text-accent" />
+                    </div>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    To provide holistic education that develops confident, caring, and creative individuals 
-                    who are prepared to be productive global citizens and lifelong learners.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="p-8 bg-accent/5 border-accent/20">
-                <CardContent className="p-0">
-                  <div className="flex items-center mb-4">
-                    <Eye className="h-8 w-8 text-accent mr-3" />
-                    <h2 className="font-display text-2xl font-bold text-accent">Our Vision</h2>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    To be the leading educational institution in Kenya, recognized for academic excellence, 
-                    character development, and preparing students for success in the 21st century.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Leadership Message */}
-        <section className="py-16 bg-muted/30">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl font-bold text-foreground mb-4">
-                Welcome from Our Principal
-              </h2>
-            </div>
-            
-            <Card className="p-8">
-              <CardContent className="p-0">
-                <div className="flex flex-col md:flex-row items-center gap-8">
-                  <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Users className="h-16 w-16 text-primary" />
-                  </div>
-                  <div>
-                    <blockquote className="text-lg text-muted-foreground italic mb-4 leading-relaxed">
-                      "Welcome to our school family! We are committed to providing an environment where 
-                      every child can discover their potential, develop their talents, and build the 
-                      foundation for a successful future. Our dedicated team of educators works tirelessly 
-                      to ensure that each student receives personalized attention and support."
-                    </blockquote>
-                    <footer className="text-foreground">
-                      <strong>Mrs. Grace Wanjiku</strong>
-                      <span className="text-muted-foreground ml-2">- School Principal</span>
-                    </footer>
+                  <div className="lg:col-span-2">
+                    <h2 className="font-display text-3xl font-bold text-foreground mb-6">
+                      Headteacher's Welcome
+                    </h2>
+                    <div className="prose prose-lg text-muted-foreground space-y-4">
+                      <p>
+                        Welcome to [SCHOOL_NAME]. We are committed to academic excellence and moral development in every child who walks through our doors.
+                      </p>
+                      <p>
+                        Our dedicated staff nurture curiosity and individual growth in a safe, supportive environment where every student can thrive. We believe in developing not just academic skills, but also character, creativity, and critical thinking.
+                      </p>
+                      <p>
+                        Together, we're building the foundation for your child's bright future.
+                      </p>
+                    </div>
+                    <div className="mt-6">
+                      <p className="font-semibold text-primary">— Mrs. Sarah Wanjiku, Headteacher</p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -88,53 +79,89 @@ const About = () => {
           </div>
         </section>
 
-        {/* Achievements */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl font-bold text-foreground mb-4">
-                Our Achievements
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Recognition of our commitment to educational excellence
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card className="text-center p-6">
-                <CardContent className="p-0">
-                  <Award className="h-12 w-12 text-accent mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Best Private School</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Karen Region Education Awards 2023
+        {/* Vision & Mission */}
+        <section className="py-16 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="shadow-card border-0">
+                <CardContent className="p-8 text-center">
+                  <Heart className="h-12 w-12 text-accent mx-auto mb-6" />
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-4">
+                    Our Vision
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    To nurture compassionate, curious learners who contribute positively to society and become responsible global citizens.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="text-center p-6">
-                <CardContent className="p-0">
-                  <Award className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">KCPE Excellence</h3>
-                  <p className="text-sm text-muted-foreground">
-                    100% Pass Rate for 5 consecutive years
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardContent className="p-0">
-                  <Award className="h-12 w-12 text-accent mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Innovation in Education</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Digital Learning Pioneer Award 2022
+              <Card className="shadow-card border-0">
+                <CardContent className="p-8 text-center">
+                  <Award className="h-12 w-12 text-accent mx-auto mb-6" />
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-4">
+                    Our Mission
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Deliver quality primary education blending academics, character formation and practical life skills in a nurturing environment.
                   </p>
                 </CardContent>
               </Card>
             </div>
           </div>
         </section>
-      </main>
 
+        {/* History */}
+        <section className="py-16 bg-background">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="font-display text-3xl font-bold text-foreground mb-8">Our History</h2>
+            <div className="prose prose-lg text-muted-foreground mx-auto">
+              <p>
+                Founded in 2008, [SCHOOL_NAME] began with a vision to provide quality primary education in [LOCATION]. 
+                Starting with just 45 students, we have grown to become a trusted educational institution serving over 500 families.
+              </p>
+              <p>
+                Over the years, we have maintained our commitment to academic excellence while embracing modern teaching methods 
+                and technology to prepare our students for the digital age.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Meet the Team */}
+        <section className="py-16 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-display text-3xl font-bold text-foreground mb-4">
+                Meet Our Team
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Dedicated professionals committed to your child's success
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {teamMembers.map((member, index) => (
+                <Card key={index} className="shadow-card border-0 text-center">
+                  <CardContent className="p-8">
+                    <div className="w-32 h-32 mx-auto bg-muted rounded-full flex items-center justify-center mb-6">
+                      <Users className="h-16 w-16 text-accent" />
+                    </div>
+                    <h3 className="font-semibold text-xl text-foreground mb-2">
+                      {member.name}
+                    </h3>
+                    <p className="text-accent font-medium mb-4">
+                      {member.role}
+                    </p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {member.bio}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
       <Footer />
     </div>
   );
