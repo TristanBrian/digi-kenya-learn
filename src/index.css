@@ -17,18 +17,18 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Professional school brand colors */
-    --primary: 221 83% 15%;  /* Deep educational blue */
+    /* Professional school brand colors - Blue/Green theme for Kenyan school */
+    --primary: 213 94% 28%;  /* Professional school blue */
     --primary-foreground: 210 40% 98%;
-    --primary-glow: 221 83% 25%;
+    --primary-glow: 213 94% 38%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    /* Gold accent for achievements */
-    --accent: 35 91% 58%;  /* Warm gold */
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --accent-light: 35 91% 68%;
+    /* Green accent for growth and success */
+    --accent: 142 76% 36%;  /* School green */
+    --accent-foreground: 210 40% 98%;
+    --accent-light: 142 76% 46%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
