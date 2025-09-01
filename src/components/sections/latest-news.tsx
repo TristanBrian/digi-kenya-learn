@@ -4,16 +4,16 @@ import { Calendar, ArrowRight } from "lucide-react";
 
 const newsItems = [
   {
-    title: "Term 1 2025 Registration Open",
-    date: "December 15, 2024",
-    summary: "Applications for Term 1 2025 are now open. Early bird discount available until January 15th.",
-    category: "Admissions"
+    title: "Term 1 2025 Opening Day",
+    date: "January 15, 2025",
+    summary: "Term 1 2025 begins Monday, January 15th. Welcome back to all students!",
+    category: "Announcement"
   },
   {
-    title: "Prize-Giving Day 2024",
-    date: "December 10, 2024",
-    summary: "Celebrating our students' achievements in academics, sports, and character development.",
-    category: "Events"
+    title: "Grade 6 Science Fair 2025",
+    date: "March 20, 2025",
+    summary: "Join us for the Grade 6 Science Fair featuring innovative student projects.",
+    category: "Event"
   }
 ];
 
@@ -55,7 +55,7 @@ export function LatestNewsSection() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" className="font-semibold">
+          <Button variant="outline" className="font-semibold" onClick={() => window.location.href = '/news'}>
             View All News
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

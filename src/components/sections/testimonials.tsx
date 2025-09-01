@@ -5,12 +5,12 @@ const testimonials = [
   {
     text: "My child settled in quickly — friendly teachers and great communication.",
     author: "Parent",
-    location: "[LOCATION]"
+    location: "Karen"
   },
   {
     text: "The individualized attention and modern facilities make all the difference for our daughter's learning.",
-    author: "Parent",
-    location: "[LOCATION]"
+    author: "Parent", 
+    location: "Nairobi"
   }
 ];
 

@@ -240,7 +240,7 @@ const Academics = () => {
             <p className="text-lg text-muted-foreground mb-8">
               Discover how our comprehensive curriculum can benefit your child's educational journey
             </p>
-            <Button size="lg" className="bg-accent hover:bg-accent-light text-accent-foreground font-semibold px-8 py-4 shadow-accent">
+            <Button size="lg" className="bg-accent hover:bg-accent-light text-accent-foreground font-semibold px-8 py-4 shadow-accent" onClick={() => window.location.href = '/admissions'}>
               View Admissions
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

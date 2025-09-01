@@ -3,7 +3,7 @@ import { Calendar, Users, UserCheck } from "lucide-react";
 const stats = [
   {
     icon: Calendar,
-    value: "15+",
+    value: "17+",
     label: "Years of Service"
   },
   {
@@ -13,7 +13,7 @@ const stats = [
   },
   {
     icon: Users,
-    value: "1:20",
+    value: "1:30",
     label: "Student-Teacher Ratio"
   }
 ];
