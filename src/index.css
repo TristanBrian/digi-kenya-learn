@@ -122,6 +122,8 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
 /* Enhanced animations for modern feel */
 @keyframes fade-in {
   from {
