@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Camera, Play, Image as ImageIcon, Users, BookOpen, Trophy } from "lucide-react";
 import { useState } from "react";
 
+import galleryDigitalClassroom from "@/assets/gallery-digital-classroom.jpg";
+import galleryCodingLab from "@/assets/gallery-coding-lab.jpg";
+import galleryOutdoorTech from "@/assets/gallery-outdoor-tech.jpg";
+
 const categories = [
   { id: 'all', name: 'All Photos', icon: ImageIcon },
   { id: 'classrooms', name: 'Classrooms', icon: BookOpen },
@@ -17,98 +21,82 @@ const categories = [
 const galleryItems = [
   {
     id: 1,
-    title: "Grade 3 English Reading Circle",
-    caption: "Students enjoying interactive reading session — March 2025",
+    title: "Smart Digital Classroom",
+    caption: "Students learning with tablets and interactive whiteboards — DigiSchool 2025",
     category: "classrooms",
     type: "photo",
-    thumbnail: "/api/placeholder/400/300"
+    thumbnail: galleryDigitalClassroom
   },
   {
     id: 2,
-    title: "Sports Day Athletics",
-    caption: "Annual sports day with track and field events — December 2024",
-    category: "sports",
+    title: "Coding Lab Session",
+    caption: "Programming classes in our modern computer lab — March 2025",
+    category: "classrooms",
     type: "photo",
-    thumbnail: "/api/placeholder/400/300"
+    thumbnail: galleryCodingLab
   },
   {
     id: 3,
-    title: "Science Fair Projects",
-    caption: "Grade 6 students presenting innovative science projects — November 2024",
+    title: "Tech-Enhanced Outdoor Learning",
+    caption: "Combining nature and technology for holistic education — February 2025",
     category: "events",
     type: "photo",
-    thumbnail: "/api/placeholder/400/300"
+    thumbnail: galleryOutdoorTech
   },
   {
     id: 4,
-    title: "ICT Lab Session",
-    caption: "Computer literacy class in our modern ICT laboratory — February 2025",
+    title: "AI Learning Workshop",
+    caption: "Introduction to artificial intelligence for Grade 6 students — March 2025",
     category: "classrooms",
     type: "photo",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 5,
-    title: "Library Reading Time",
-    caption: "Quiet study and reading in our well-equipped library — January 2025",
+    title: "Digital Library Hub",
+    caption: "E-books and interactive learning resources — January 2025",
     category: "library",
     type: "photo",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 6,
-    title: "Field Trip to Museum",
-    caption: "Educational trip to National Museum — October 2024",
+    title: "Virtual Reality Field Trip",
+    caption: "Exploring ancient civilizations through VR technology — February 2025",
     category: "trips",
-    type: "photo",
+    type: "video",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 7,
-    title: "Football Team Practice",
-    caption: "School football team training session — March 2025",
+    title: "Robotics Competition",
+    caption: "Student-built robots in inter-school competition — March 2025",
     category: "sports",
     type: "video",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 8,
-    title: "Prize Giving Ceremony",
-    caption: "Celebrating academic and character excellence — December 2024",
+    title: "Digital Innovation Fair",
+    caption: "Students showcase their tech projects and innovations — December 2024",
     category: "events",
     type: "photo",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 9,
-    title: "Art & Craft Class",
-    caption: "Creative arts session with Grade 4 students — February 2025",
+    title: "3D Design Workshop",
+    caption: "Learning 3D modeling and printing with Grade 7 students — February 2025",
     category: "classrooms",
     type: "photo",
     thumbnail: "/api/placeholder/400/300"
   },
   {
     id: 10,
-    title: "Safari Park Visit",
-    caption: "Environmental studies trip to Nairobi National Park — January 2025",
+    title: "Tech Safari Experience",
+    caption: "Using drones and cameras to document wildlife — January 2025",
     category: "trips",
     type: "video",
-    thumbnail: "/api/placeholder/400/300"
-  },
-  {
-    id: 11,
-    title: "Debate Competition",
-    caption: "Inter-class debate competition finals — March 2025",
-    category: "events",
-    type: "photo",
-    thumbnail: "/api/placeholder/400/300"
-  },
-  {
-    id: 12,
-    title: "Netball Championship",
-    caption: "School netball team in regional championship — February 2025",
-    category: "sports",
-    type: "photo",
     thumbnail: "/api/placeholder/400/300"
   }
 ];
@@ -128,10 +116,10 @@ const Gallery = () => {
         <section className="py-16 bg-gradient-hero">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Gallery
+              DigiSchool Gallery
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Browse photos of learning activities, sports, trips and school events
+              Discover our digital learning environment, innovative classrooms, and tech-powered education
             </p>
           </div>
         </section>
@@ -162,8 +150,22 @@ const Gallery = () => {
               {filteredItems.map((item) => (
                 <Card key={item.id} className="shadow-card border-0 overflow-hidden hover:shadow-elegant transition-all duration-300 group">
                   <div className="relative aspect-[4/3] overflow-hidden">
-                    {/* Placeholder for image */}
-                    <div className="w-full h-full bg-muted flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    {/* Image */}
+                    <img 
+                      src={item.thumbnail} 
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (nextElement) {
+                          nextElement.style.display = 'flex';
+                        }
+                      }}
+                    />
+                    {/* Fallback placeholder */}
+                    <div className="w-full h-full bg-muted flex items-center justify-center absolute inset-0" style={{ display: 'none' }}>
                       <Camera className="h-16 w-16 text-muted-foreground" />
                     </div>
                     
