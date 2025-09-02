@@ -382,7 +382,7 @@ const Admissions = () => {
                       onCheckedChange={(checked) => setFormData({...formData, consentGiven: checked as boolean})}
                     />
                     <Label htmlFor="consent" className="text-sm leading-relaxed">
-                      I consent to [SCHOOL_NAME] storing my child's information for admissions and communication. 
+                      I consent to DigiSchool storing my child's information for admissions and communication. 
                       See <a href="/privacy-policy" className="text-accent hover:underline">Privacy Policy</a>.
                     </Label>
                   </div>

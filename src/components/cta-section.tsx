@@ -24,13 +24,13 @@ export function CTASection() {
             Apply Now
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-3"
-          >
-            Schedule Visit
-          </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="bg-accent/10 backdrop-blur-sm text-accent hover:bg-accent hover:text-accent-foreground px-8 py-3 font-semibold border-2 border-accent/60 rounded-full transform hover:scale-105 transition-all duration-300"
+            >
+              Schedule Visit
+            </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center text-primary-foreground/80">

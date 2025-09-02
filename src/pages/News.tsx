@@ -91,7 +91,7 @@ const News = () => {
               News & Events
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Latest announcements, term calendar and upcoming events at [SCHOOL_NAME]
+              Latest announcements, term calendar and upcoming events at DigiSchool
             </p>
           </div>
         </section>
@@ -269,7 +269,7 @@ const News = () => {
                     <h3 className="font-semibold text-foreground mb-2">Sample SMS Reminder:</h3>
                     <div className="bg-background p-4 rounded-lg border">
                       <p className="text-sm text-foreground">
-                        <strong>Reminder:</strong> Prize-Giving Day at [SCHOOL_NAME] on Sat, 5 Dec at 10:00 AM. See details: [LINK]
+                        <strong>Reminder:</strong> Prize-Giving Day at DigiSchool on Sat, 5 Dec at 10:00 AM. See details: [LINK]
                       </p>
                     </div>
                   </div>

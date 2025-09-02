@@ -97,7 +97,7 @@ const Contact = () => {
               Contact Us
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Contact [SCHOOL_NAME] to schedule a visit or ask about admissions and fees
+              Contact DigiSchool to schedule a visit or ask about admissions and fees
             </p>
           </div>
         </section>
@@ -128,8 +128,8 @@ const Contact = () => {
                         <div>
                           <h3 className="font-semibold text-foreground mb-2">Address</h3>
                           <p className="text-muted-foreground">
-                            [SCHOOL_ADDRESS]<br />
-                            [LOCATION], Kenya
+                            Karen Road, Plot 123<br />
+                            Karen, Nairobi, Kenya
                           </p>
                         </div>
                       </div>
@@ -166,8 +166,8 @@ const Contact = () => {
                         <div>
                           <h3 className="font-semibold text-foreground mb-2">Email</h3>
                           <p className="text-muted-foreground">
-                            <a href="mailto:info@schoolname.co.ke" className="hover:text-accent transition-colors">
-                              info@schoolname.co.ke
+                            <a href="mailto:info@digischool.co.ke" className="hover:text-accent transition-colors">
+                              info@digischool.co.ke
                             </a>
                           </p>
                         </div>
@@ -336,7 +336,7 @@ const Contact = () => {
                       Google Maps integration would be embedded here
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      [SCHOOL_ADDRESS], [LOCATION]
+                      Karen Road, Plot 123, Karen, Nairobi
                     </p>
                   </div>
                 </div>

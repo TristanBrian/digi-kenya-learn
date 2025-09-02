@@ -34,7 +34,7 @@ const About = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-                About [SCHOOL_NAME]
+                About DigiSchool
               </h1>
               <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
                 Discover our mission, values, and the dedicated team committed to your child's success
@@ -60,7 +60,7 @@ const About = () => {
                     </h2>
                     <div className="prose prose-lg text-muted-foreground space-y-4">
                       <p>
-                        Welcome to [SCHOOL_NAME]. We are committed to academic excellence and moral development in every child who walks through our doors.
+                        Welcome to DigiSchool. We are committed to academic excellence and moral development in every child who walks through our doors.
                       </p>
                       <p>
                         Our dedicated staff nurture curiosity and individual growth in a safe, supportive environment where every student can thrive. We believe in developing not just academic skills, but also character, creativity, and critical thinking.
@@ -116,7 +116,7 @@ const About = () => {
             <h2 className="font-display text-3xl font-bold text-foreground mb-8">Our History</h2>
             <div className="prose prose-lg text-muted-foreground mx-auto">
               <p>
-                Founded in 2008, [SCHOOL_NAME] began with a vision to provide quality primary education in [LOCATION]. 
+                Founded in 2008, DigiSchool began with a vision to provide quality primary education in Karen, Nairobi. 
                 Starting with just 45 students, we have grown to become a trusted educational institution serving over 500 families.
               </p>
               <p>

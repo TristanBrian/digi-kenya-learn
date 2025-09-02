@@ -26,7 +26,7 @@ const PrivacyPolicy = () => {
                 Data Collection and Usage
               </h2>
               <p className="text-muted-foreground mb-6">
-                [SCHOOL_NAME] collects personal information for admissions, payments, and communication purposes only. 
+                DigiSchool collects personal information for admissions, payments, and communication purposes only. 
                 We store student names, contact details, academic records, and payment information securely in our 
                 encrypted database systems.
               </p>
