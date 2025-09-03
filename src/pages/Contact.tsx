@@ -38,30 +38,59 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Get a demo school ID (in real app, this would be dynamic)
-      const { data: schools } = await supabase
+      console.log('Starting contact form submission...');
+      
+      // Get DigiSchool ID or fallback to any school
+      const { data: schools, error: schoolError } = await supabase
         .from('schools')
-        .select('id')
+        .select('id, name')
+        .eq('name', 'DigiSchool')
         .limit(1);
       
-      const schoolId = schools?.[0]?.id;
+      let schoolId;
+      if (schoolError || !schools || schools.length === 0) {
+        console.log('DigiSchool not found, using fallback school');
+        const { data: fallbackSchools } = await supabase
+          .from('schools')
+          .select('id, name')
+          .limit(1);
+        schoolId = fallbackSchools?.[0]?.id;
+      } else {
+        schoolId = schools[0].id;
+      }
 
-      const { error } = await supabase
+      if (!schoolId) {
+        throw new Error('No school found in system');
+      }
+
+      console.log('Using school ID:', schoolId);
+
+      const submissionData = {
+        school_id: schoolId,
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim() || null,
+        message: formData.message.trim(),
+        preferred_contact: formData.preferredContact || null,
+        status: 'new'
+      };
+
+      console.log('Contact submission data:', submissionData);
+
+      const { data, error } = await supabase
         .from('contact_messages')
-        .insert({
-          school_id: schoolId,
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email,
-          message: formData.message,
-          preferred_contact: formData.preferredContact,
-          status: 'new'
-        });
+        .insert(submissionData)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase contact insertion error:', error);
+        throw error;
+      }
+
+      console.log('Contact message submitted successfully:', data);
 
       toast({
-        title: "Message Sent!",
+        title: "Message Sent Successfully!",
         description: "Thank you for contacting us. We'll respond within 2 business days.",
       });
 
@@ -74,11 +103,11 @@ const Contact = () => {
         preferredContact: ''
       });
 
-    } catch (error) {
-      console.error('Error submitting contact form:', error);
+    } catch (error: any) {
+      console.error('Full error submitting contact form:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error sending your message. Please try again.",
+        description: error.message || "There was an error sending your message. Please try again.",
         variant: "destructive"
       });
     } finally {

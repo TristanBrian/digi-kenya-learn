@@ -36,6 +36,32 @@ const Admissions = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate all required fields
+    const requiredFields = {
+      childFirstName: "Child's First Name",
+      childLastName: "Child's Last Name", 
+      dateOfBirth: "Date of Birth",
+      gradeApplyingFor: "Grade Applying For",
+      parentName: "Parent/Guardian Name",
+      parentPhone: "Parent Phone"
+    };
+
+    const emptyFields = [];
+    for (const [field, label] of Object.entries(requiredFields)) {
+      if (!formData[field as keyof typeof formData]) {
+        emptyFields.push(label);
+      }
+    }
+
+    if (emptyFields.length > 0) {
+      toast({
+        title: "Missing Required Information",
+        description: `Please fill in: ${emptyFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!formData.consentGiven) {
       toast({
         title: "Consent Required",
@@ -48,43 +74,82 @@ const Admissions = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Starting admission submission...');
+      
       // Generate admission reference
       const admissionRef = `ADM-${Date.now()}`;
+      console.log('Generated admission ref:', admissionRef);
       
-      // Get a demo school ID (in real app, this would be dynamic)
-      const { data: schools } = await supabase
+      // Get DigiSchool ID
+      const { data: schools, error: schoolError } = await supabase
         .from('schools')
-        .select('id')
+        .select('id, name')
+        .eq('name', 'DigiSchool')
         .limit(1);
       
-      const schoolId = schools?.[0]?.id;
+      if (schoolError) {
+        console.error('School fetch error:', schoolError);
+        throw new Error('Failed to fetch school information');
+      }
 
-      const { error } = await supabase
+      if (!schools || schools.length === 0) {
+        // Fallback to any available school
+        const { data: fallbackSchools, error: fallbackError } = await supabase
+          .from('schools')
+          .select('id, name')
+          .limit(1);
+          
+        if (fallbackError || !fallbackSchools?.length) {
+          console.error('No schools found:', fallbackError);
+          throw new Error('No schools available in the system');
+        }
+        
+        console.log('Using fallback school:', fallbackSchools[0]);
+      }
+      
+      const schoolId = schools?.[0]?.id || (await supabase.from('schools').select('id').limit(1)).data?.[0]?.id;
+      console.log('Using school ID:', schoolId);
+
+      if (!schoolId) {
+        throw new Error('School ID not found');
+      }
+
+      const submissionData = {
+        school_id: schoolId,
+        admission_ref: admissionRef,
+        child_first_name: formData.childFirstName.trim(),
+        child_last_name: formData.childLastName.trim(),
+        date_of_birth: formData.dateOfBirth,
+        gender: formData.gender || null,
+        grade_applying_for: formData.gradeApplyingFor,
+        current_school: formData.currentSchool.trim() || null,
+        parent_name: formData.parentName.trim(),
+        parent_phone: formData.parentPhone.trim(),
+        parent_email: formData.parentEmail.trim() || null,
+        address: formData.address.trim() || null,
+        preferred_term: formData.preferredTerm || null,
+        emergency_contact_name: formData.emergencyContactName.trim() || null,
+        emergency_contact_phone: formData.emergencyContactPhone.trim() || null,
+        consent_given: formData.consentGiven,
+        status: 'new'
+      };
+
+      console.log('Submission data:', submissionData);
+
+      const { data, error } = await supabase
         .from('admissions')
-        .insert({
-          school_id: schoolId,
-          admission_ref: admissionRef,
-          child_first_name: formData.childFirstName,
-          child_last_name: formData.childLastName,
-          date_of_birth: formData.dateOfBirth,
-          gender: formData.gender,
-          grade_applying_for: formData.gradeApplyingFor,
-          current_school: formData.currentSchool,
-          parent_name: formData.parentName,
-          parent_phone: formData.parentPhone,
-          parent_email: formData.parentEmail,
-          address: formData.address,
-          preferred_term: formData.preferredTerm,
-          emergency_contact_name: formData.emergencyContactName,
-          emergency_contact_phone: formData.emergencyContactPhone,
-          consent_given: formData.consentGiven,
-          status: 'new'
-        });
+        .insert(submissionData)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insertion error:', error);
+        throw error;
+      }
+
+      console.log('Admission submitted successfully:', data);
 
       toast({
-        title: "Application Submitted!",
+        title: "Application Submitted Successfully!",
         description: `Thank you! Your application reference is ${admissionRef}. We will contact you within 3 working days.`,
       });
 
@@ -106,11 +171,11 @@ const Admissions = () => {
         consentGiven: false
       });
 
-    } catch (error) {
-      console.error('Error submitting application:', error);
+    } catch (error: any) {
+      console.error('Full error submitting application:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
+        description: error.message || "There was an error submitting your application. Please try again.",
         variant: "destructive"
       });
     } finally {
