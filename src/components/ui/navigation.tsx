@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { Menu, X, GraduationCap, User, Shield, LogOut, LogIn } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const navigationItems = [
   { name: "Home", href: "/" },
@@ -17,7 +19,60 @@ const navigationItems = [
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          checkAdminStatus(session.user.id);
+        } else {
+          setIsAdmin(false);
+          setLoading(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data: userRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      setIsAdmin(!!userRole);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setIsOpen(false);
+  };
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -50,9 +105,50 @@ export function Navigation() {
                   {item.name}
                 </Link>
               ))}
-              <Button variant="default" size="sm" className="ml-4">
-                Parent Portal
-              </Button>
+              
+              {/* Auth Buttons */}
+              <div className="flex items-center gap-2 ml-4">
+                {loading ? (
+                  <div className="w-8 h-8 animate-spin rounded-full border-b-2 border-primary"></div>
+                ) : user ? (
+                  <>
+                    {isAdmin && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        asChild
+                        className="flex items-center gap-2"
+                      >
+                        <Link to="/admin">
+                          <Shield className="h-4 w-4" />
+                          Admin
+                        </Link>
+                      </Button>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2"
+                    >
+                      <User className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    asChild
+                    className="flex items-center gap-2"
+                  >
+                    <Link to="/auth">
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -88,10 +184,54 @@ export function Navigation() {
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 pb-2">
-                <Button variant="default" size="sm" className="w-full">
-                  Parent Portal
-                </Button>
+              
+              {/* Mobile Auth Section */}
+              <div className="pt-4 pb-2 space-y-2">
+                {loading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-6 h-6 animate-spin rounded-full border-b-2 border-primary"></div>
+                  </div>
+                ) : user ? (
+                  <>
+                    {isAdmin && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full flex items-center gap-2"
+                        asChild
+                      >
+                        <Link to="/admin" onClick={() => setIsOpen(false)}>
+                          <Shield className="h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      </Button>
+                    )}
+                    <div className="text-center text-sm text-muted-foreground py-2">
+                      Welcome, {user.email}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full flex items-center gap-2"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="w-full flex items-center gap-2"
+                    asChild
+                  >
+                    <Link to="/auth" onClick={() => setIsOpen(false)}>
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
