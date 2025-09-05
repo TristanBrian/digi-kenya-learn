@@ -118,12 +118,14 @@ const galleryItems = [
   }
 ];
 
+const Gallery = () => {
   // Add missing date and views for first three items
   const galleryItemsWithMeta = galleryItems.map(item => ({
     ...item,
     date: item.date || "2025-03-01",
     views: item.views || Math.floor(Math.random() * 500) + 100
   }));
+  
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedImage, setSelectedImage] = useState<any>(null);
