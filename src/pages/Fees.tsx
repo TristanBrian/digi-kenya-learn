@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Smartphone, CreditCard, QrCode, Receipt, Shield, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Fees = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -35,35 +36,103 @@ const Fees = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate M-Pesa STK Push
+      // Get DigiSchool ID
+      const { data: schools } = await supabase
+        .from('schools')
+        .select('id, name')
+        .eq('name', 'DigiSchool')
+        .limit(1);
+      
+      const schoolId = schools?.[0]?.id || (await supabase.from('schools').select('id').limit(1)).data?.[0]?.id;
+
+      if (!schoolId) {
+        throw new Error('School ID not found');
+      }
+
+      // Generate receipt and transaction IDs
+      const mpesaTransactionId = `M${Date.now().toString().slice(-8)}`;
+      const mpesaReceipt = `RCPT-${Date.now()}`;
+      const checkoutRequestId = `CR-${Date.now()}`;
+      const merchantRequestId = `MR-${Date.now()}`;
+
       toast({
         title: "Payment Initiated",
         description: "Please check your phone for the M-Pesa prompt and enter your PIN.",
       });
 
-      // Simulate processing delay
-      setTimeout(() => {
-        toast({
-          title: "Payment Successful!",
-          description: `Payment of KES ${paymentData.amount} received. Receipt: RCPT-${Date.now()}. MPESA Ref: M${Date.now().toString().slice(-8)}.`,
-        });
-        
-        // Reset form
-        setPaymentData({
-          studentId: '',
-          amount: '',
-          payerPhone: '',
-          email: ''
-        });
-        
-        setIsProcessing(false);
+      // Save payment to database with pending status
+      const paymentRecord = {
+        school_id: schoolId,
+        admission_ref: paymentData.studentId,
+        amount: parseFloat(paymentData.amount),
+        payer_phone: paymentData.payerPhone.trim(),
+        payer_email: paymentData.email.trim() || null,
+        payment_method: 'mpesa',
+        status: 'pending',
+        checkout_request_id: checkoutRequestId,
+        merchant_request_id: merchantRequestId
+      };
+
+      const { data: payment, error: insertError } = await supabase
+        .from('payments')
+        .insert(paymentRecord)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Payment insertion error:', insertError);
+        throw new Error('Failed to record payment');
+      }
+
+      // Simulate STK push processing
+      setTimeout(async () => {
+        try {
+          // Update payment as completed
+          const { error: updateError } = await supabase
+            .from('payments')
+            .update({
+              status: 'completed',
+              mpesa_transaction_id: mpesaTransactionId,
+              mpesa_receipt: mpesaReceipt,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', payment.id);
+
+          if (updateError) {
+            console.error('Payment update error:', updateError);
+            throw updateError;
+          }
+
+          toast({
+            title: "Payment Successful!",
+            description: `Payment of KES ${paymentData.amount} received. Receipt: ${mpesaReceipt}. MPESA Ref: ${mpesaTransactionId}.`,
+          });
+          
+          // Reset form
+          setPaymentData({
+            studentId: '',
+            amount: '',
+            payerPhone: '',
+            email: ''
+          });
+          
+        } catch (err) {
+          console.error('Error updating payment:', err);
+          toast({
+            title: "Payment Processing Issue",
+            description: "Payment may have been received but confirmation failed. Please contact support.",
+            variant: "destructive"
+          });
+        } finally {
+          setIsProcessing(false);
+        }
       }, 3000);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment error:', error);
       toast({
         title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        description: error.message || "There was an error processing your payment. Please try again.",
         variant: "destructive"
       });
       setIsProcessing(false);

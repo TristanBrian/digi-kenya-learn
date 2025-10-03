@@ -28,7 +28,8 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Receipt
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,6 +85,20 @@ interface Admission {
   notes: string | null;
 }
 
+interface Payment {
+  id: string;
+  admission_ref: string | null;
+  amount: number;
+  payer_phone: string;
+  payer_email: string | null;
+  payment_method: string;
+  status: string;
+  mpesa_receipt: string | null;
+  mpesa_transaction_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const AdminDashboard = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -95,6 +110,7 @@ const AdminDashboard = () => {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [admissions, setAdmissions] = useState<Admission[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   
   // Form states
   const [showNewsDialog, setShowNewsDialog] = useState(false);
@@ -197,6 +213,15 @@ const AdminDashboard = () => {
         .limit(10);
 
       if (admissionsData) setAdmissions(admissionsData);
+
+      // Load payments
+      const { data: paymentsData } = await supabase
+        .from('payments')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (paymentsData) setPayments(paymentsData);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -417,7 +442,7 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               Overview
@@ -434,6 +459,10 @@ const AdminDashboard = () => {
               <Users className="h-4 w-4" />
               Admissions
             </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <Receipt className="h-4 w-4" />
+              Payments
+            </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Messages
@@ -442,7 +471,7 @@ const AdminDashboard = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="shadow-card border-0">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -480,6 +509,20 @@ const AdminDashboard = () => {
                     </div>
                     <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
                       <Users className="h-5 w-5 text-green-600" />
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <Card className="shadow-card border-0">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total Payments</p>
+                      <p className="text-2xl font-bold text-foreground">KES {payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                      <Receipt className="h-5 w-5 text-blue-600" />
                     </div>
                   </div>
                 </CardHeader>
@@ -774,6 +817,76 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Payment Management</h2>
+              <div className="text-sm text-muted-foreground">
+                Total Revenue: KES {payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
+              </div>
+            </div>
+
+            <Card className="shadow-card border-0">
+              <CardContent className="p-0">
+                <div className="divide-y">
+                  {payments.map((payment) => (
+                    <div key={payment.id} className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold text-lg">KES {payment.amount.toLocaleString()}</h3>
+                            <Badge variant={
+                              payment.status === 'completed' ? 'default' : 
+                              payment.status === 'pending' ? 'secondary' : 
+                              'destructive'
+                            }>
+                              {payment.status}
+                            </Badge>
+                            <Badge variant="outline">{payment.payment_method.toUpperCase()}</Badge>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">
+                              Student/Ref: {payment.admission_ref || 'N/A'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Payer: {payment.payer_phone} {payment.payer_email && `• ${payment.payer_email}`}
+                            </p>
+                            {payment.mpesa_transaction_id && (
+                              <p className="text-sm text-muted-foreground">
+                                M-Pesa Ref: {payment.mpesa_transaction_id}
+                              </p>
+                            )}
+                            {payment.mpesa_receipt && (
+                              <p className="text-sm text-muted-foreground">
+                                Receipt: {payment.mpesa_receipt}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">Created</p>
+                          <p className="text-sm font-medium">{new Date(payment.created_at).toLocaleString()}</p>
+                          {payment.updated_at !== payment.created_at && (
+                            <>
+                              <p className="text-xs text-muted-foreground mt-2">Updated</p>
+                              <p className="text-sm font-medium">{new Date(payment.updated_at).toLocaleString()}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {payments.length === 0 && (
+                    <div className="p-12 text-center text-muted-foreground">
+                      <Receipt className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No payments yet</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
