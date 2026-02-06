@@ -125,13 +125,26 @@ export function Navigation() {
                         </Link>
                       </Button>
                     )}
+                    {!isAdmin && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        asChild
+                        className="flex items-center gap-2"
+                      >
+                        <Link to="/student">
+                          <User className="h-4 w-4" />
+                          My Portal
+                        </Link>
+                      </Button>
+                    )}
                     <Button 
                       variant="ghost" 
                       size="sm"
                       onClick={handleSignOut}
                       className="flex items-center gap-2"
                     >
-                      <User className="h-4 w-4" />
+                      <LogOut className="h-4 w-4" />
                       Sign Out
                     </Button>
                   </>
@@ -203,6 +216,19 @@ export function Navigation() {
                         <Link to="/admin" onClick={() => setIsOpen(false)}>
                           <Shield className="h-4 w-4" />
                           Admin Dashboard
+                        </Link>
+                      </Button>
+                    )}
+                    {!isAdmin && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full flex items-center gap-2"
+                        asChild
+                      >
+                        <Link to="/student" onClick={() => setIsOpen(false)}>
+                          <User className="h-4 w-4" />
+                          Student Portal
                         </Link>
                       </Button>
                     )}

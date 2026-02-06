@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Smartphone, CreditCard, QrCode, Receipt, Shield, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -36,24 +35,9 @@ const Fees = () => {
     setIsProcessing(true);
 
     try {
-      // Get DigiSchool ID
-      const { data: schools } = await supabase
-        .from('schools')
-        .select('id, name')
-        .eq('name', 'DigiSchool')
-        .limit(1);
-      
-      const schoolId = schools?.[0]?.id || (await supabase.from('schools').select('id').limit(1)).data?.[0]?.id;
-
-      if (!schoolId) {
-        throw new Error('School ID not found');
-      }
-
       // Generate receipt and transaction IDs
       const mpesaTransactionId = `M${Date.now().toString().slice(-8)}`;
       const mpesaReceipt = `RCPT-${Date.now()}`;
-      const checkoutRequestId = `CR-${Date.now()}`;
-      const merchantRequestId = `MR-${Date.now()}`;
 
       toast({
         title: "Payment Initiated",
@@ -62,19 +46,16 @@ const Fees = () => {
 
       // Save payment to database with pending status
       const paymentRecord = {
-        school_id: schoolId,
         admission_ref: paymentData.studentId,
         amount: parseFloat(paymentData.amount),
         payer_phone: paymentData.payerPhone.trim(),
         payer_email: paymentData.email.trim() || null,
         payment_method: 'mpesa',
-        status: 'pending',
-        checkout_request_id: checkoutRequestId,
-        merchant_request_id: merchantRequestId
+        status: 'pending'
       };
 
       const { data: payment, error: insertError } = await supabase
-        .from('payments')
+        .from('payments' as any)
         .insert(paymentRecord)
         .select()
         .single();
@@ -89,14 +70,14 @@ const Fees = () => {
         try {
           // Update payment as completed
           const { error: updateError } = await supabase
-            .from('payments')
+            .from('payments' as any)
             .update({
               status: 'completed',
               mpesa_transaction_id: mpesaTransactionId,
               mpesa_receipt: mpesaReceipt,
               updated_at: new Date().toISOString()
             })
-            .eq('id', payment.id);
+            .eq('id', (payment as any).id);
 
           if (updateError) {
             console.error('Payment update error:', updateError);
@@ -192,16 +173,16 @@ const Fees = () => {
                     Enter phone → Get popup PIN verification on phone
                   </p>
                   <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-green-600" />
+                    <div className="flex items-center gap-2 justify-center">
+                      <Shield className="h-4 w-4 text-primary" />
                       Secure & Fast
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Receipt className="h-4 w-4 text-green-600" />
+                    <div className="flex items-center gap-2 justify-center">
+                      <Receipt className="h-4 w-4 text-primary" />
                       Instant Receipt
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-green-600" />
+                    <div className="flex items-center gap-2 justify-center">
+                      <Clock className="h-4 w-4 text-primary" />
                       Real-time Processing
                     </div>
                   </div>
@@ -323,7 +304,7 @@ const Fees = () => {
                   <Button 
                     type="submit" 
                     size="lg" 
-                    className="w-full bg-accent hover:bg-accent-light text-accent-foreground font-semibold shadow-accent"
+                    className="w-full"
                     disabled={isProcessing}
                   >
                     {isProcessing ? (

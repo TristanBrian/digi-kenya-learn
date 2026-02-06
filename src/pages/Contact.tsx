@@ -38,35 +38,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('Starting contact form submission...');
-      
-      // Get DigiSchool ID or fallback to any school
-      const { data: schools, error: schoolError } = await supabase
-        .from('schools')
-        .select('id, name')
-        .eq('name', 'DigiSchool')
-        .limit(1);
-      
-      let schoolId;
-      if (schoolError || !schools || schools.length === 0) {
-        console.log('DigiSchool not found, using fallback school');
-        const { data: fallbackSchools } = await supabase
-          .from('schools')
-          .select('id, name')
-          .limit(1);
-        schoolId = fallbackSchools?.[0]?.id;
-      } else {
-        schoolId = schools[0].id;
-      }
-
-      if (!schoolId) {
-        throw new Error('No school found in system');
-      }
-
-      console.log('Using school ID:', schoolId);
-
       const submissionData = {
-        school_id: schoolId,
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         email: formData.email.trim() || null,
@@ -75,26 +47,20 @@ const Contact = () => {
         status: 'new'
       };
 
-      console.log('Contact submission data:', submissionData);
-
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .insert(submissionData)
-        .select();
+      const { error } = await supabase
+        .from('contact_messages' as any)
+        .insert(submissionData);
 
       if (error) {
-        console.error('Supabase contact insertion error:', error);
+        console.error('Contact insertion error:', error);
         throw error;
       }
-
-      console.log('Contact message submitted successfully:', data);
 
       toast({
         title: "Message Sent Successfully!",
         description: "Thank you for contacting us. We'll respond within 2 business days.",
       });
 
-      // Reset form
       setFormData({
         name: '',
         phone: '',
@@ -104,7 +70,7 @@ const Contact = () => {
       });
 
     } catch (error: any) {
-      console.error('Full error submitting contact form:', error);
+      console.error('Error submitting contact form:', error);
       toast({
         title: "Submission Failed",
         description: error.message || "There was an error sending your message. Please try again.",
@@ -224,11 +190,11 @@ const Contact = () => {
                 </div>
 
                 {/* WhatsApp Button */}
-                <Card className="shadow-card border-0 bg-green-50 border-green-200">
+                <Card className="shadow-card border-0 bg-primary/5">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <MessageCircle className="h-6 w-6 text-green-600" />
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <MessageCircle className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-2">WhatsApp</h3>
@@ -238,7 +204,6 @@ const Contact = () => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-green-300 text-green-700 hover:bg-green-50"
                           onClick={() => window.open('https://wa.me/254700123456', '_blank')}
                         >
                           <MessageCircle className="mr-2 h-4 w-4" />
@@ -323,7 +288,7 @@ const Contact = () => {
                       <Button 
                         type="submit" 
                         size="lg" 
-                        className="w-full bg-accent hover:bg-accent-light text-accent-foreground font-semibold shadow-accent"
+                        className="w-full"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -357,7 +322,6 @@ const Contact = () => {
 
             <Card className="shadow-card border-0 overflow-hidden">
               <CardContent className="p-0">
-                {/* Placeholder for Google Maps */}
                 <div className="w-full h-96 bg-muted flex items-center justify-center">
                   <div className="text-center">
                     <MapPin className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

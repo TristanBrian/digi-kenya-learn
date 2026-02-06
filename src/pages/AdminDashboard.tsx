@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,27 +9,25 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   LayoutDashboard, 
   Users, 
   FileText, 
   Image, 
   MessageSquare, 
-  Settings, 
   Plus, 
   Edit, 
   Trash2, 
   Eye,
   LogOut,
   Shield,
-  Calendar,
   School,
   AlertCircle,
   CheckCircle,
   Clock,
-  TrendingUp,
-  Receipt
+  Receipt,
+  GraduationCap,
+  Home
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,7 +37,7 @@ interface NewsEvent {
   id: string;
   title: string;
   type: string;
-  excerpt: string;
+  excerpt: string | null;
   content: string;
   event_date: string | null;
   event_location: string | null;
@@ -99,6 +97,16 @@ interface Payment {
   updated_at: string;
 }
 
+interface Student {
+  id: string;
+  admission_number: string;
+  first_name: string;
+  last_name: string;
+  grade: string;
+  status: string | null;
+  user_id: string | null;
+}
+
 const AdminDashboard = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -111,6 +119,7 @@ const AdminDashboard = () => {
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   
   // Form states
   const [showNewsDialog, setShowNewsDialog] = useState(false);
@@ -123,6 +132,18 @@ const AdminDashboard = () => {
     event_date: '',
     event_location: '',
     published: false
+  });
+
+  // Student form
+  const [showStudentDialog, setShowStudentDialog] = useState(false);
+  const [studentForm, setStudentForm] = useState({
+    admission_number: '',
+    first_name: '',
+    last_name: '',
+    grade: '',
+    parent_name: '',
+    parent_phone: '',
+    parent_email: ''
   });
 
   const navigate = useNavigate();
@@ -178,50 +199,59 @@ const AdminDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Load news/events
+      // Load news/events - using type assertion since tables were just created
       const { data: news } = await supabase
-        .from('news_events')
+        .from('news_events' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (news) setNewsEvents(news);
+      if (news) setNewsEvents(news as unknown as NewsEvent[]);
 
       // Load gallery images
       const { data: gallery } = await supabase
-        .from('gallery_images')
+        .from('gallery_images' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (gallery) setGalleryImages(gallery);
+      if (gallery) setGalleryImages(gallery as unknown as GalleryImage[]);
 
       // Load contact messages
       const { data: contacts } = await supabase
-        .from('contact_messages')
+        .from('contact_messages' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (contacts) setContactMessages(contacts);
+      if (contacts) setContactMessages(contacts as unknown as ContactMessage[]);
 
       // Load admissions
       const { data: admissionsData } = await supabase
-        .from('admissions')
+        .from('admissions' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (admissionsData) setAdmissions(admissionsData);
+      if (admissionsData) setAdmissions(admissionsData as unknown as Admission[]);
 
       // Load payments
       const { data: paymentsData } = await supabase
-        .from('payments')
+        .from('payments' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (paymentsData) setPayments(paymentsData);
+      if (paymentsData) setPayments(paymentsData as unknown as Payment[]);
+
+      // Load students
+      const { data: studentsData } = await supabase
+        .from('students')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (studentsData) setStudents(studentsData);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -243,12 +273,12 @@ const AdminDashboard = () => {
       const newsData = {
         ...newsForm,
         author_id: user?.id,
-        school_id: 'default-school-id' // You might want to get this from user's profile
+        school_id: 'default'
       };
 
       if (editingNews) {
         const { error } = await supabase
-          .from('news_events')
+          .from('news_events' as any)
           .update(newsData)
           .eq('id', editingNews.id);
 
@@ -260,7 +290,7 @@ const AdminDashboard = () => {
         });
       } else {
         const { error } = await supabase
-          .from('news_events')
+          .from('news_events' as any)
           .insert([newsData]);
 
         if (error) throw error;
@@ -311,7 +341,7 @@ const AdminDashboard = () => {
 
     try {
       const { error } = await supabase
-        .from('news_events')
+        .from('news_events' as any)
         .delete()
         .eq('id', id);
 
@@ -335,7 +365,7 @@ const AdminDashboard = () => {
   const updateContactStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from('contact_messages')
+        .from('contact_messages' as any)
         .update({ status })
         .eq('id', id);
 
@@ -359,7 +389,7 @@ const AdminDashboard = () => {
   const updateAdmissionStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from('admissions')
+        .from('admissions' as any)
         .update({ status })
         .eq('id', id);
 
@@ -375,6 +405,39 @@ const AdminDashboard = () => {
       toast({
         title: "Error",
         description: error.message || "Failed to update status",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCreateStudent = async () => {
+    try {
+      const { error } = await supabase
+        .from('students')
+        .insert([studentForm]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Student Created",
+        description: "Student record has been created successfully."
+      });
+
+      setShowStudentDialog(false);
+      setStudentForm({
+        admission_number: '',
+        first_name: '',
+        last_name: '',
+        grade: '',
+        parent_name: '',
+        parent_phone: '',
+        parent_email: ''
+      });
+      loadDashboardData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create student",
         variant: "destructive"
       });
     }
@@ -414,7 +477,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b bg-card">
+      <div className="border-b bg-card sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
@@ -431,6 +494,10 @@ const AdminDashboard = () => {
                 <Shield className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium">Admin</span>
               </div>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+                <Home className="h-4 w-4 mr-2" />
+                Home
+              </Button>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
@@ -442,45 +509,49 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
-              Overview
+              <span className="hidden lg:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="students" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              <span className="hidden lg:inline">Students</span>
             </TabsTrigger>
             <TabsTrigger value="news" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              News & Events
+              <span className="hidden lg:inline">News</span>
             </TabsTrigger>
             <TabsTrigger value="gallery" className="flex items-center gap-2">
               <Image className="h-4 w-4" />
-              Gallery
+              <span className="hidden lg:inline">Gallery</span>
             </TabsTrigger>
             <TabsTrigger value="admissions" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Admissions
+              <span className="hidden lg:inline">Admissions</span>
             </TabsTrigger>
             <TabsTrigger value="payments" className="flex items-center gap-2">
               <Receipt className="h-4 w-4" />
-              Payments
+              <span className="hidden lg:inline">Payments</span>
             </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
-              Messages
+              <span className="hidden lg:inline">Messages</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="shadow-card border-0">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total News</p>
-                      <p className="text-2xl font-bold text-foreground">{newsEvents.length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Total Students</p>
+                      <p className="text-2xl font-bold text-foreground">{students.length}</p>
                     </div>
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-primary" />
+                      <GraduationCap className="h-5 w-5 text-primary" />
                     </div>
                   </div>
                 </CardHeader>
@@ -490,11 +561,13 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Gallery Images</p>
-                      <p className="text-2xl font-bold text-foreground">{galleryImages.length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Pending Admissions</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {admissions.filter(a => a.status === 'pending').length}
+                      </p>
                     </div>
                     <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <Image className="h-5 w-5 text-accent" />
+                      <Users className="h-5 w-5 text-accent" />
                     </div>
                   </div>
                 </CardHeader>
@@ -504,25 +577,13 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">New Admissions</p>
-                      <p className="text-2xl font-bold text-foreground">{admissions.filter(a => a.status === 'new').length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">New Messages</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {contactMessages.filter(c => c.status === 'new').length}
+                      </p>
                     </div>
-                    <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-                      <Users className="h-5 w-5 text-green-600" />
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="shadow-card border-0">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Payments</p>
-                      <p className="text-2xl font-bold text-foreground">KES {payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                      <Receipt className="h-5 w-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-secondary/50 rounded-lg flex items-center justify-center">
+                      <MessageSquare className="h-5 w-5 text-secondary-foreground" />
                     </div>
                   </div>
                 </CardHeader>
@@ -532,404 +593,545 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Unread Messages</p>
-                      <p className="text-2xl font-bold text-foreground">{contactMessages.filter(m => m.status === 'new').length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Recent Payments</p>
+                      <p className="text-2xl font-bold text-foreground">{payments.length}</p>
                     </div>
-                    <div className="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                      <MessageSquare className="h-5 w-5 text-orange-600" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Receipt className="h-5 w-5 text-primary" />
                     </div>
                   </div>
                 </CardHeader>
               </Card>
             </div>
 
-            {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-card border-0">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Recent News & Events
-                  </CardTitle>
+                  <CardTitle>Recent Students</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {newsEvents.slice(0, 3).map((news) => (
-                    <div key={news.id} className="flex items-start gap-3 p-3 rounded-lg border">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{news.title}</h4>
-                        <p className="text-xs text-muted-foreground">{new Date(news.created_at).toLocaleDateString()}</p>
-                        <Badge variant={news.published ? "default" : "secondary"} className="text-xs mt-1">
-                          {news.published ? "Published" : "Draft"}
-                        </Badge>
-                      </div>
+                <CardContent>
+                  {students.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-4">No students yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {students.slice(0, 5).map((student) => (
+                        <div key={student.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <div>
+                            <p className="font-medium">{student.first_name} {student.last_name}</p>
+                            <p className="text-sm text-muted-foreground">{student.admission_number}</p>
+                          </div>
+                          <Badge>{student.grade}</Badge>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </CardContent>
               </Card>
 
-              <Card className="shadow-card border-0">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Recent Applications
-                  </CardTitle>
+                  <CardTitle>Recent Admissions</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {admissions.slice(0, 3).map((admission) => (
-                    <div key={admission.id} className="flex items-start gap-3 p-3 rounded-lg border">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{admission.child_first_name} {admission.child_last_name}</h4>
-                        <p className="text-xs text-muted-foreground">Grade {admission.grade_applying_for}</p>
-                        <Badge variant="outline" className="text-xs mt-1">
-                          {admission.status}
-                        </Badge>
-                      </div>
+                <CardContent>
+                  {admissions.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-4">No admissions yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {admissions.slice(0, 5).map((admission) => (
+                        <div key={admission.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <div>
+                            <p className="font-medium">{admission.child_first_name} {admission.child_last_name}</p>
+                            <p className="text-sm text-muted-foreground">{admission.grade_applying_for}</p>
+                          </div>
+                          <Badge variant={admission.status === 'pending' ? 'secondary' : admission.status === 'approved' ? 'default' : 'destructive'}>
+                            {admission.status}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* News & Events Tab */}
+          {/* Students Tab */}
+          <TabsContent value="students" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Student Management</h2>
+                <p className="text-muted-foreground">Manage student records and link accounts</p>
+              </div>
+              <Dialog open={showStudentDialog} onOpenChange={setShowStudentDialog}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Student
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Add New Student</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Admission Number</Label>
+                        <Input 
+                          value={studentForm.admission_number}
+                          onChange={(e) => setStudentForm(p => ({...p, admission_number: e.target.value}))}
+                          placeholder="e.g., DS2025001"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Grade</Label>
+                        <Select 
+                          value={studentForm.grade} 
+                          onValueChange={(v) => setStudentForm(p => ({...p, grade: v}))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select grade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Form 1', 'Form 2', 'Form 3', 'Form 4'].map(g => (
+                              <SelectItem key={g} value={g}>{g}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>First Name</Label>
+                        <Input 
+                          value={studentForm.first_name}
+                          onChange={(e) => setStudentForm(p => ({...p, first_name: e.target.value}))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Last Name</Label>
+                        <Input 
+                          value={studentForm.last_name}
+                          onChange={(e) => setStudentForm(p => ({...p, last_name: e.target.value}))}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Parent Name</Label>
+                      <Input 
+                        value={studentForm.parent_name}
+                        onChange={(e) => setStudentForm(p => ({...p, parent_name: e.target.value}))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Parent Phone</Label>
+                        <Input 
+                          value={studentForm.parent_phone}
+                          onChange={(e) => setStudentForm(p => ({...p, parent_phone: e.target.value}))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Parent Email</Label>
+                        <Input 
+                          type="email"
+                          value={studentForm.parent_email}
+                          onChange={(e) => setStudentForm(p => ({...p, parent_email: e.target.value}))}
+                        />
+                      </div>
+                    </div>
+                    <Button onClick={handleCreateStudent} className="w-full">
+                      Create Student
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                {students.length === 0 ? (
+                  <div className="text-center py-12">
+                    <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No students registered yet</p>
+                    <Button className="mt-4" onClick={() => setShowStudentDialog(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add First Student
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-muted/50">
+                          <th className="text-left py-3 px-4 font-medium">Adm. No</th>
+                          <th className="text-left py-3 px-4 font-medium">Name</th>
+                          <th className="text-left py-3 px-4 font-medium">Grade</th>
+                          <th className="text-left py-3 px-4 font-medium">Status</th>
+                          <th className="text-left py-3 px-4 font-medium">Account</th>
+                          <th className="text-right py-3 px-4 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {students.map((student) => (
+                          <tr key={student.id} className="border-b hover:bg-muted/50">
+                            <td className="py-3 px-4 font-mono text-sm">{student.admission_number}</td>
+                            <td className="py-3 px-4 font-medium">{student.first_name} {student.last_name}</td>
+                            <td className="py-3 px-4">{student.grade}</td>
+                            <td className="py-3 px-4">
+                              <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
+                                {student.status || 'active'}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              {student.user_id ? (
+                                <Badge variant="outline" className="bg-primary/10">
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Linked
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  Not Linked
+                                </Badge>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <Button variant="ghost" size="sm">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* News Tab */}
           <TabsContent value="news" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">News & Events Management</h2>
+              <h2 className="text-2xl font-bold">News & Events</h2>
               <Dialog open={showNewsDialog} onOpenChange={setShowNewsDialog}>
                 <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add News/Event
+                  <Button onClick={() => { setEditingNews(null); setNewsForm({ title: '', type: 'news', excerpt: '', content: '', event_date: '', event_location: '', published: false }); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add News
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>{editingNews ? 'Edit' : 'Create'} News/Event</DialogTitle>
+                    <DialogTitle>{editingNews ? 'Edit News' : 'Create News'}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Title</Label>
+                      <Input 
+                        value={newsForm.title}
+                        onChange={(e) => setNewsForm(p => ({...p, title: e.target.value}))}
+                      />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                          id="title"
-                          value={newsForm.title}
-                          onChange={(e) => setNewsForm(prev => ({ ...prev, title: e.target.value }))}
-                          placeholder="Enter title"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="type">Type</Label>
-                        <Select value={newsForm.type} onValueChange={(value) => setNewsForm(prev => ({ ...prev, type: value }))}>
+                      <div className="space-y-2">
+                        <Label>Type</Label>
+                        <Select value={newsForm.type} onValueChange={(v) => setNewsForm(p => ({...p, type: v}))}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="news">News</SelectItem>
                             <SelectItem value="event">Event</SelectItem>
+                            <SelectItem value="announcement">Announcement</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="excerpt">Excerpt</Label>
-                      <Textarea
-                        id="excerpt"
-                        value={newsForm.excerpt}
-                        onChange={(e) => setNewsForm(prev => ({ ...prev, excerpt: e.target.value }))}
-                        placeholder="Brief description"
-                        rows={2}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="content">Content</Label>
-                      <Textarea
-                        id="content"
-                        value={newsForm.content}
-                        onChange={(e) => setNewsForm(prev => ({ ...prev, content: e.target.value }))}
-                        placeholder="Full content"
-                        rows={4}
-                      />
-                    </div>
-
-                    {newsForm.type === 'event' && (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="event_date">Event Date & Time</Label>
-                          <Input
-                            id="event_date"
-                            type="datetime-local"
-                            value={newsForm.event_date}
-                            onChange={(e) => setNewsForm(prev => ({ ...prev, event_date: e.target.value }))}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="event_location">Location</Label>
-                          <Input
-                            id="event_location"
-                            value={newsForm.event_location}
-                            onChange={(e) => setNewsForm(prev => ({ ...prev, event_location: e.target.value }))}
-                            placeholder="Event location"
-                          />
-                        </div>
+                      <div className="space-y-2">
+                        <Label>Event Date (optional)</Label>
+                        <Input 
+                          type="datetime-local"
+                          value={newsForm.event_date}
+                          onChange={(e) => setNewsForm(p => ({...p, event_date: e.target.value}))}
+                        />
                       </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="published"
-                        checked={newsForm.published}
-                        onChange={(e) => setNewsForm(prev => ({ ...prev, published: e.target.checked }))}
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Excerpt</Label>
+                      <Input 
+                        value={newsForm.excerpt}
+                        onChange={(e) => setNewsForm(p => ({...p, excerpt: e.target.value}))}
+                        placeholder="Short summary..."
                       />
-                      <Label htmlFor="published">Publish immediately</Label>
                     </div>
-
-                    <div className="flex gap-2 pt-4">
-                      <Button onClick={handleSaveNews}>
-                        {editingNews ? 'Update' : 'Create'}
-                      </Button>
-                      <Button variant="outline" onClick={() => setShowNewsDialog(false)}>
-                        Cancel
-                      </Button>
+                    <div className="space-y-2">
+                      <Label>Content</Label>
+                      <Textarea 
+                        value={newsForm.content}
+                        onChange={(e) => setNewsForm(p => ({...p, content: e.target.value}))}
+                        rows={5}
+                      />
                     </div>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2">
+                        <input 
+                          type="checkbox" 
+                          checked={newsForm.published}
+                          onChange={(e) => setNewsForm(p => ({...p, published: e.target.checked}))}
+                          className="rounded"
+                        />
+                        <span className="text-sm">Published</span>
+                      </label>
+                    </div>
+                    <Button onClick={handleSaveNews} className="w-full">
+                      {editingNews ? 'Update' : 'Create'} News
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
 
-            <Card className="shadow-card border-0">
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {newsEvents.map((news) => (
-                    <div key={news.id} className="p-6 flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold">{news.title}</h3>
-                          <Badge variant={news.type === 'event' ? 'default' : 'secondary'}>
-                            {news.type}
-                          </Badge>
-                          <Badge variant={news.published ? 'default' : 'outline'}>
+            <div className="grid gap-4">
+              {newsEvents.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No news items yet</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                newsEvents.map((news) => (
+                  <Card key={news.id}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">{news.title}</CardTitle>
+                          <CardDescription>
+                            {new Date(news.created_at).toLocaleDateString()} • {news.type}
+                          </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={news.published ? 'default' : 'secondary'}>
                             {news.published ? 'Published' : 'Draft'}
                           </Badge>
+                          <Button variant="ghost" size="sm" onClick={() => handleEditNews(news)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteNews(news.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{news.excerpt}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Created: {new Date(news.created_at).toLocaleDateString()}
-                          {news.event_date && ` • Event: ${new Date(news.event_date).toLocaleDateString()}`}
-                        </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleEditNews(news)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDeleteNews(news.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground text-sm">{news.excerpt}</p>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
           </TabsContent>
 
           {/* Gallery Tab */}
           <TabsContent value="gallery" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Gallery Management</h2>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Image
+              <h2 className="text-2xl font-bold">Photo Gallery</h2>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Upload Image
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {galleryImages.map((image) => (
-                <Card key={image.id} className="shadow-card border-0">
-                  <div className="aspect-video overflow-hidden rounded-t-lg">
-                    <img 
-                      src={image.image_url} 
-                      alt={image.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-1">{image.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{image.caption}</p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline">{image.category}</Badge>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+            {galleryImages.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Image className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No images in gallery yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {galleryImages.map((image) => (
+                  <Card key={image.id} className="overflow-hidden">
+                    <div className="aspect-square bg-muted">
+                      <img src={image.image_url} alt={image.title} className="w-full h-full object-cover" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <CardContent className="p-3">
+                      <p className="font-medium text-sm truncate">{image.title}</p>
+                      <p className="text-xs text-muted-foreground">{image.category}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Admissions Tab */}
           <TabsContent value="admissions" className="space-y-6">
-            <h2 className="text-2xl font-bold">Admissions Management</h2>
+            <h2 className="text-2xl font-bold">Admission Applications</h2>
 
-            <Card className="shadow-card border-0">
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {admissions.map((admission) => (
-                    <div key={admission.id} className="p-6">
-                      <div className="flex items-start justify-between mb-4">
+            {admissions.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No admission applications yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {admissions.map((admission) => (
+                  <Card key={admission.id}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-semibold text-lg">
+                          <CardTitle className="text-lg">
                             {admission.child_first_name} {admission.child_last_name}
-                          </h3>
-                          <p className="text-muted-foreground">
-                            Ref: {admission.admission_ref} • Grade {admission.grade_applying_for}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Parent: {admission.parent_name} • {admission.parent_phone}
-                          </p>
+                          </CardTitle>
+                          <CardDescription>
+                            Ref: {admission.admission_ref} • Applied for {admission.grade_applying_for}
+                          </CardDescription>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Select value={admission.status} onValueChange={(value) => updateAdmissionStatus(admission.id, value)}>
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new">New</SelectItem>
-                              <SelectItem value="reviewing">Reviewing</SelectItem>
-                              <SelectItem value="approved">Approved</SelectItem>
-                              <SelectItem value="rejected">Rejected</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        <Select 
+                          value={admission.status} 
+                          onValueChange={(v) => updateAdmissionStatus(admission.id, v)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Parent</p>
+                          <p className="font-medium">{admission.parent_name}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Phone</p>
+                          <p className="font-medium">{admission.parent_phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Email</p>
+                          <p className="font-medium">{admission.parent_email || '-'}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Applied</p>
+                          <p className="font-medium">{new Date(admission.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        Applied: {new Date(admission.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Payments Tab */}
           <TabsContent value="payments" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Payment Management</h2>
-              <div className="text-sm text-muted-foreground">
-                Total Revenue: KES {payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold">Payment Records</h2>
 
-            <Card className="shadow-card border-0">
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {payments.map((payment) => (
-                    <div key={payment.id} className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-lg">KES {payment.amount.toLocaleString()}</h3>
-                            <Badge variant={
-                              payment.status === 'completed' ? 'default' : 
-                              payment.status === 'pending' ? 'secondary' : 
-                              'destructive'
-                            }>
-                              {payment.status}
-                            </Badge>
-                            <Badge variant="outline">{payment.payment_method.toUpperCase()}</Badge>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">
-                              Student/Ref: {payment.admission_ref || 'N/A'}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Payer: {payment.payer_phone} {payment.payer_email && `• ${payment.payer_email}`}
-                            </p>
-                            {payment.mpesa_transaction_id && (
-                              <p className="text-sm text-muted-foreground">
-                                M-Pesa Ref: {payment.mpesa_transaction_id}
-                              </p>
-                            )}
-                            {payment.mpesa_receipt && (
-                              <p className="text-sm text-muted-foreground">
-                                Receipt: {payment.mpesa_receipt}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">Created</p>
-                          <p className="text-sm font-medium">{new Date(payment.created_at).toLocaleString()}</p>
-                          {payment.updated_at !== payment.created_at && (
-                            <>
-                              <p className="text-xs text-muted-foreground mt-2">Updated</p>
-                              <p className="text-sm font-medium">{new Date(payment.updated_at).toLocaleString()}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {payments.length === 0 && (
-                    <div className="p-12 text-center text-muted-foreground">
-                      <Receipt className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No payments yet</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {payments.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No payment records yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-muted/50">
+                          <th className="text-left py-3 px-4 font-medium">Date</th>
+                          <th className="text-left py-3 px-4 font-medium">Reference</th>
+                          <th className="text-left py-3 px-4 font-medium">Amount</th>
+                          <th className="text-left py-3 px-4 font-medium">Method</th>
+                          <th className="text-left py-3 px-4 font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payments.map((payment) => (
+                          <tr key={payment.id} className="border-b hover:bg-muted/50">
+                            <td className="py-3 px-4">{new Date(payment.created_at).toLocaleDateString()}</td>
+                            <td className="py-3 px-4 font-mono text-sm">{payment.admission_ref || payment.mpesa_receipt || '-'}</td>
+                            <td className="py-3 px-4 font-medium">KES {payment.amount.toLocaleString()}</td>
+                            <td className="py-3 px-4">{payment.payment_method}</td>
+                            <td className="py-3 px-4">
+                              <Badge variant={payment.status === 'completed' ? 'default' : payment.status === 'pending' ? 'secondary' : 'destructive'}>
+                                {payment.status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Messages Tab */}
           <TabsContent value="messages" className="space-y-6">
             <h2 className="text-2xl font-bold">Contact Messages</h2>
 
-            <Card className="shadow-card border-0">
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {contactMessages.map((message) => (
-                    <div key={message.id} className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{message.name}</h3>
-                          <p className="text-sm text-muted-foreground mb-2">
+            {contactMessages.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No messages yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {contactMessages.map((message) => (
+                  <Card key={message.id}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">{message.name}</CardTitle>
+                          <CardDescription>
                             {message.email} • {message.phone}
-                          </p>
-                          <p className="text-sm">{message.message}</p>
+                          </CardDescription>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Select value={message.status} onValueChange={(value) => updateContactStatus(message.id, value)}>
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new">New</SelectItem>
-                              <SelectItem value="responded">Responded</SelectItem>
-                              <SelectItem value="closed">Closed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        <Select 
+                          value={message.status} 
+                          onValueChange={(v) => updateContactStatus(message.id, v)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="new">New</SelectItem>
+                            <SelectItem value="read">Read</SelectItem>
+                            <SelectItem value="replied">Replied</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        Received: {new Date(message.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{message.message}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(message.created_at).toLocaleString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
