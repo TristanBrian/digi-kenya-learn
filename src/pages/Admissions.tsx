@@ -196,65 +196,26 @@ const Admissions = () => {
       // Generate admission reference
       const admissionRef = `ADM-${Date.now()}`;
       console.log('Generated admission ref:', admissionRef);
-      
-      // Get DigiSchool ID
-      const { data: schools, error: schoolError } = await supabase
-        .from('schools')
-        .select('id, name')
-        .eq('name', 'DigiSchool')
-        .limit(1);
-      
-      if (schoolError) {
-        console.error('School fetch error:', schoolError);
-        throw new Error('Failed to fetch school information');
-      }
-
-      if (!schools || schools.length === 0) {
-        // Fallback to any available school
-        const { data: fallbackSchools, error: fallbackError } = await supabase
-          .from('schools')
-          .select('id, name')
-          .limit(1);
-          
-        if (fallbackError || !fallbackSchools?.length) {
-          console.error('No schools found:', fallbackError);
-          throw new Error('No schools available in the system');
-        }
-        
-        console.log('Using fallback school:', fallbackSchools[0]);
-      }
-      
-      const schoolId = schools?.[0]?.id || (await supabase.from('schools').select('id').limit(1)).data?.[0]?.id;
-      console.log('Using school ID:', schoolId);
-
-      if (!schoolId) {
-        throw new Error('School ID not found');
-      }
 
       const submissionData = {
-        school_id: schoolId,
         admission_ref: admissionRef,
         child_first_name: formData.childFirstName.trim(),
         child_last_name: formData.childLastName.trim(),
-        date_of_birth: formData.dateOfBirth,
-        gender: formData.gender || null,
+        child_dob: formData.dateOfBirth,
+        child_gender: formData.gender || null,
         grade_applying_for: formData.gradeApplyingFor,
-        current_school: formData.currentSchool.trim() || null,
+        previous_school: formData.currentSchool.trim() || null,
         parent_name: formData.parentName.trim(),
         parent_phone: formData.parentPhone.trim(),
         parent_email: formData.parentEmail.trim() || null,
-        address: formData.address.trim() || null,
-        preferred_term: formData.preferredTerm || null,
-        emergency_contact_name: formData.emergencyContactName.trim() || null,
-        emergency_contact_phone: formData.emergencyContactPhone.trim() || null,
-        consent_given: formData.consentGiven,
-        status: 'new'
+        parent_address: formData.address.trim() || null,
+        status: 'pending'
       };
 
       console.log('Submission data:', submissionData);
 
       const { data, error } = await supabase
-        .from('admissions')
+        .from('admissions' as any)
         .insert(submissionData)
         .select();
 
@@ -287,6 +248,8 @@ const Admissions = () => {
         emergencyContactPhone: '',
         consentGiven: false
       });
+      setCurrentStep(1);
+      setCompletedSteps([]);
 
     } catch (error: any) {
       console.error('Full error submitting application:', error);

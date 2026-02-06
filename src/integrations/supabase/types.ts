@@ -44,6 +44,96 @@ export type Database = {
         }
         Relationships: []
       }
+      admissions: {
+        Row: {
+          admission_ref: string
+          child_dob: string | null
+          child_first_name: string
+          child_gender: string | null
+          child_last_name: string
+          created_at: string
+          grade_applying_for: string
+          id: string
+          notes: string | null
+          parent_address: string | null
+          parent_email: string | null
+          parent_name: string
+          parent_phone: string
+          previous_school: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          admission_ref: string
+          child_dob?: string | null
+          child_first_name: string
+          child_gender?: string | null
+          child_last_name: string
+          created_at?: string
+          grade_applying_for: string
+          id?: string
+          notes?: string | null
+          parent_address?: string | null
+          parent_email?: string | null
+          parent_name: string
+          parent_phone: string
+          previous_school?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admission_ref?: string
+          child_dob?: string | null
+          child_first_name?: string
+          child_gender?: string | null
+          child_last_name?: string
+          created_at?: string
+          grade_applying_for?: string
+          id?: string
+          notes?: string | null
+          parent_address?: string | null
+          parent_email?: string | null
+          parent_name?: string
+          parent_phone?: string
+          previous_school?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string
+          preferred_contact: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone: string
+          preferred_contact?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string
+          preferred_contact?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       fee_categories: {
         Row: {
           amount: number
@@ -189,6 +279,129 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      gallery_images: {
+        Row: {
+          caption: string | null
+          category: string
+          created_at: string
+          featured: boolean | null
+          id: string
+          image_url: string
+          school_id: string | null
+          title: string
+        }
+        Insert: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          featured?: boolean | null
+          id?: string
+          image_url: string
+          school_id?: string | null
+          title: string
+        }
+        Update: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          featured?: boolean | null
+          id?: string
+          image_url?: string
+          school_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      news_events: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string
+          event_date: string | null
+          event_location: string | null
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          published: boolean | null
+          school_id: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string
+          event_date?: string | null
+          event_location?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          published?: boolean | null
+          school_id?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          event_date?: string | null
+          event_location?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          published?: boolean | null
+          school_id?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          admission_ref: string | null
+          amount: number
+          created_at: string
+          id: string
+          mpesa_receipt: string | null
+          mpesa_transaction_id: string | null
+          payer_email: string | null
+          payer_phone: string
+          payment_method: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          admission_ref?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          mpesa_receipt?: string | null
+          mpesa_transaction_id?: string | null
+          payer_email?: string | null
+          payer_phone: string
+          payment_method?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admission_ref?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          mpesa_receipt?: string | null
+          mpesa_transaction_id?: string | null
+          payer_email?: string | null
+          payer_phone?: string
+          payment_method?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

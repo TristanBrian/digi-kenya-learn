@@ -8,11 +8,11 @@ const footerLinks = {
     { name: "Admissions", href: "/admissions" },
     { name: "News & Events", href: "/news" },
   ],
-  parents: [
-    { name: "Parent Portal", href: "/parent-login" },
+  portals: [
+    { name: "Student Portal", href: "/student" },
     { name: "Fee Structure", href: "/fees" },
-    { name: "Academic Calendar", href: "/calendar" },
-    { name: "Homework Portal", href: "/homework" },
+    { name: "Photo Gallery", href: "/gallery" },
+    { name: "Contact Us", href: "/contact" },
   ],
   contact: [
     { icon: Phone, text: "+254 700 123 456" },
@@ -62,11 +62,11 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Parent Links */}
+          {/* Quick Links */}
           <div>
-            <h3 className="font-semibold mb-4">Parents</h3>
+            <h3 className="font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3">
-              {footerLinks.parents.map((link) => (
+              {footerLinks.portals.map((link) => (
                 <li key={link.name}>
                   <Link 
                     to={link.href}
@@ -103,11 +103,11 @@ export function Footer() {
             © 2024 DigiSchool. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/privacy" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
+            <Link to="/privacy-policy" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
-              Terms of Service
+            <Link to="/contact" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
+              Contact Us
             </Link>
           </div>
         </div>
