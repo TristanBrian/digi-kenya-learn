@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { demoAuth } from "@/utils/demoAuth";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface NewsEvent {
@@ -161,6 +162,15 @@ const AdminDashboard = () => {
 
   const checkAuth = async () => {
     try {
+      // Check demo auth first
+      const demoSession = demoAuth.getSession();
+      if (demoSession && demoSession.user.role === 'admin') {
+        setUser({ email: demoSession.user.email } as any);
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.user) {
@@ -199,6 +209,116 @@ const AdminDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
+      // Load demo data if using demo auth
+      const demoSession = demoAuth.getSession();
+      if (demoSession && demoSession.user.role === 'admin') {
+        // Demo news events
+        const demoNews: NewsEvent[] = [
+          {
+            id: '1',
+            title: 'New ICT Lab Inauguration',
+            type: 'news',
+            excerpt: 'State-of-the-art computer laboratory launched',
+            content: 'EAIC has officially opened its new Information Technology laboratory equipped with the latest computing systems and software for hands-on training.',
+            event_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            event_location: 'Main Campus',
+            featured_image_url: '/gallery-digital-classroom.jpg',
+            published: true,
+            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            author_id: 'admin-001'
+          },
+          {
+            id: '2',
+            title: 'Business Program Expansion',
+            type: 'news',
+            excerpt: 'New business management specializations added',
+            content: 'The college has expanded its business curriculum to include entrepreneurship and digital marketing specializations.',
+            event_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            event_location: 'Business School',
+            featured_image_url: null,
+            published: true,
+            created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            author_id: 'admin-001'
+          }
+        ];
+
+        // Demo admissions
+        const demoAdmissions: Admission[] = [
+          {
+            id: '1',
+            admission_ref: 'ADM/2024/001',
+            child_first_name: 'James',
+            child_last_name: 'Kipchoge',
+            parent_name: 'Joseph Kipchoge',
+            parent_email: 'joseph@example.com',
+            parent_phone: '+254712345678',
+            grade_applying_for: 'ICT Diploma',
+            status: 'Pending',
+            created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            notes: 'Completed secondary education with distinction'
+          },
+          {
+            id: '2',
+            admission_ref: 'ADM/2024/002',
+            child_first_name: 'Grace',
+            child_last_name: 'Mwangi',
+            parent_name: 'Margaret Mwangi',
+            parent_email: 'margaret@example.com',
+            parent_phone: '+254723456789',
+            grade_applying_for: 'Business Certificate',
+            status: 'Approved',
+            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            notes: 'Awaiting enrollment'
+          }
+        ];
+
+        // Demo payments
+        const demoPayments: Payment[] = [
+          {
+            id: '1',
+            admission_ref: 'ADM/2024/002',
+            amount: 50000,
+            payer_phone: '+254723456789',
+            payer_email: 'margaret@example.com',
+            payment_method: 'mpesa',
+            status: 'Completed',
+            mpesa_receipt: 'MPESA123456',
+            mpesa_transaction_id: 'LIV234567890',
+            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ];
+
+        // Demo students
+        const demoStudents: Student[] = [
+          {
+            id: '1',
+            admission_number: 'EAIC/2024/001',
+            first_name: 'John',
+            last_name: 'Kipchoge',
+            grade: 'ICT Diploma Year 1',
+            status: 'Active',
+            user_id: 'student-001'
+          },
+          {
+            id: '2',
+            admission_number: 'EAIC/2024/002',
+            first_name: 'Grace',
+            last_name: 'Mwangi',
+            grade: 'Business Certificate Year 1',
+            status: 'Active',
+            user_id: null
+          }
+        ];
+
+        setNewsEvents(demoNews);
+        setAdmissions(demoAdmissions);
+        setPayments(demoPayments);
+        setStudents(demoStudents);
+        return;
+      }
+
+      // Load from Supabase for real users
       const [newsRes, galleryRes, contactsRes, admissionsRes, paymentsRes, studentsRes] = await Promise.all([
         supabase.from('news_events').select('*').order('created_at', { ascending: false }).limit(10),
         supabase.from('gallery_images').select('*').order('created_at', { ascending: false }).limit(10),
@@ -226,6 +346,7 @@ const AdminDashboard = () => {
   };
 
   const handleSignOut = async () => {
+    demoAuth.signOut();
     await supabase.auth.signOut();
     navigate('/');
   };

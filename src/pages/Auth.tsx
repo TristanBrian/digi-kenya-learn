@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, User, School, AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, School, AlertCircle, CheckCircle, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { demoAuth, DEMO_CREDENTIALS } from "@/utils/demoAuth";
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 const Auth = () => {
@@ -195,6 +196,25 @@ const Auth = () => {
     setLoading(true);
     
     try {
+      // Try demo login first
+      const demoSession = demoAuth.signIn(formData.email, formData.password);
+      
+      if (demoSession) {
+        toast({
+          title: "Welcome back!",
+          description: "Demo access granted.",
+        });
+        
+        // Redirect based on role
+        if (demoSession.user.role === 'admin') {
+          navigate('/admin');
+        } else if (demoSession.user.role === 'student') {
+          navigate('/student');
+        }
+        return;
+      }
+
+      // Fall back to Supabase if demo login fails
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
@@ -260,10 +280,10 @@ const Auth = () => {
             <School className="h-8 w-8 text-primary" />
           </div>
           <h1 className="font-display text-2xl font-bold text-primary-foreground mb-2">
-            DigiSchool Portal
+            EAIC Portal
           </h1>
           <p className="text-primary-foreground/80">
-            Access your school account
+            Access your account
           </p>
         </div>
 
@@ -341,6 +361,50 @@ const Auth = () => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Signing in..." : "Sign In"}
                   </Button>
+
+                  <Separator className="my-4" />
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground mb-3">Demo Credentials:</p>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-start text-left"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          email: DEMO_CREDENTIALS.admin.email,
+                          password: DEMO_CREDENTIALS.admin.password
+                        });
+                      }}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs font-semibold">Admin Dashboard</span>
+                        <span className="text-xs text-muted-foreground">{DEMO_CREDENTIALS.admin.email}</span>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-start text-left"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          email: DEMO_CREDENTIALS.student.email,
+                          password: DEMO_CREDENTIALS.student.password
+                        });
+                      }}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs font-semibold">Student Portal</span>
+                        <span className="text-xs text-muted-foreground">{DEMO_CREDENTIALS.student.email}</span>
+                      </div>
+                    </Button>
+                  </div>
                 </form>
               </TabsContent>
 

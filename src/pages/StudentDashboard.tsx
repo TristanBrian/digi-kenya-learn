@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { demoAuth } from "@/utils/demoAuth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { StudentSidebar } from "@/components/student/StudentSidebar";
 import { TimetableView } from "@/components/student/TimetableView";
@@ -74,8 +75,8 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session?.user) { navigate("/auth"); return; }
-      setUser(session.user);
+      if (!session?.user && !demoAuth.getSession()) { navigate("/auth"); return; }
+      setUser(session?.user ?? null);
     });
     checkAuth();
     return () => subscription.unsubscribe();
@@ -83,6 +84,30 @@ const StudentDashboard = () => {
 
   const checkAuth = async () => {
     try {
+      // Check demo auth first
+      const demoSession = demoAuth.getSession();
+      if (demoSession && demoSession.user.role === 'student') {
+        setUser({ email: demoSession.user.email } as any);
+        const demoStudent: StudentData = {
+          id: 'student-001',
+          admission_number: demoSession.user.studentId || 'EAIC/2024/001',
+          first_name: demoSession.user.name.split(' ')[0],
+          last_name: demoSession.user.name.split(' ')[1] || '',
+          date_of_birth: '2005-01-15',
+          gender: 'Male',
+          grade: 'ICT Diploma Year 1',
+          stream: null,
+          parent_name: 'Joseph Kipchoge',
+          parent_phone: '+254712345678',
+          parent_email: 'joseph@example.com',
+          enrollment_date: '2024-01-15',
+          status: 'Active'
+        };
+        setStudent(demoStudent);
+        await loadStudentData('student-001');
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) { navigate("/auth"); return; }
       setUser(session.user);
@@ -117,6 +142,66 @@ const StudentDashboard = () => {
   };
 
   const loadStudentData = async (studentId: string) => {
+    // Check if demo user
+    const demoSession = demoAuth.getSession();
+    if (demoSession && demoSession.user.role === 'student') {
+      // Demo data
+      const demoResults: Result[] = [
+        {
+          id: '1',
+          score: 85,
+          grade: 'A',
+          remarks: 'Excellent performance',
+          subject: { name: 'Computer Hardware', code: 'ICT101' },
+          term: { name: 'Term 1', year: 2024 }
+        },
+        {
+          id: '2',
+          score: 78,
+          grade: 'B+',
+          remarks: 'Good effort',
+          subject: { name: 'Network Administration', code: 'ICT102' },
+          term: { name: 'Term 1', year: 2024 }
+        },
+        {
+          id: '3',
+          score: 92,
+          grade: 'A',
+          remarks: 'Outstanding work',
+          subject: { name: 'Database Management', code: 'ICT103' },
+          term: { name: 'Term 1', year: 2024 }
+        }
+      ];
+
+      const demoFees: FeeRecord[] = [
+        {
+          id: '1',
+          total_amount: 50000,
+          amount_paid: 30000,
+          balance: 20000,
+          status: 'Partially Paid',
+          due_date: '2024-02-28',
+          term: { name: 'Term 1', year: 2024 }
+        }
+      ];
+
+      const demoPayments: FeePayment[] = [
+        {
+          id: '1',
+          amount: 30000,
+          payment_method: 'M-Pesa',
+          receipt_number: 'MPESA123456',
+          created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+
+      setResults(demoResults);
+      setFeeRecords(demoFees);
+      setFeePayments(demoPayments);
+      setLoading(false);
+      return;
+    }
+
     const [resultsRes, feesRes, paymentsRes] = await Promise.all([
       supabase.from("results").select("id, score, grade, remarks, subject:subjects(name, code), term:academic_terms(name, year)").eq("student_id", studentId).order("created_at", { ascending: false }),
       supabase.from("fee_records").select("id, total_amount, amount_paid, balance, status, due_date, term:academic_terms(name, year)").eq("student_id", studentId).order("created_at", { ascending: false }),
@@ -126,9 +211,14 @@ const StudentDashboard = () => {
     if (resultsRes.data) setResults(resultsRes.data.map((r: any) => ({ ...r, subject: r.subject, term: r.term })));
     if (feesRes.data) setFeeRecords(feesRes.data.map((f: any) => ({ ...f, term: f.term })));
     if (paymentsRes.data) setFeePayments(paymentsRes.data);
+    setLoading(false);
   };
 
-  const handleSignOut = async () => { await supabase.auth.signOut(); navigate("/"); };
+  const handleSignOut = async () => { 
+    demoAuth.signOut();
+    await supabase.auth.signOut(); 
+    navigate("/"); 
+  };
 
   const avgScore = results.length ? (results.reduce((s, r) => s + r.score, 0) / results.length).toFixed(1) : "0";
   const totalBalance = feeRecords.reduce((s, f) => s + f.balance, 0);
