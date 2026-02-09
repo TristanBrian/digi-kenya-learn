@@ -73,7 +73,6 @@ const Auth = () => {
             email: user.email,
             full_name: formData.fullName || user.user_metadata?.full_name || '',
             phone: formData.phone || user.user_metadata?.phone || '',
-            role: 'user'
           });
 
         if (error) {
@@ -84,6 +83,34 @@ const Auth = () => {
       console.error('Error managing profile:', error);
     }
   };
+
+  const redirectByRole = async (userId: string) => {
+    const { data: adminRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    if (adminRole) {
+      navigate('/admin');
+      return;
+    }
+
+    const { data: studentData } = await supabase
+      .from('students')
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (studentData) {
+      navigate('/student');
+      return;
+    }
+
+    navigate('/');
+  };
+
 
   const validateForm = (isSignUp: boolean = false) => {
     const newErrors: Record<string, string> = {};
@@ -144,10 +171,11 @@ const Auth = () => {
         });
       } else if (data.session) {
         toast({
-          title: "Welcome to DigiSchool!",
+          title: "Welcome!",
           description: "Your account has been created successfully.",
         });
-        navigate('/');
+        // Redirect based on role
+        await redirectByRole(data.session.user.id);
       }
     } catch (error: any) {
       toast({
@@ -179,7 +207,7 @@ const Auth = () => {
         description: "You have been signed in successfully.",
       });
       
-      navigate('/');
+      await redirectByRole(data.user.id);
     } catch (error: any) {
       toast({
         title: "Sign in failed",

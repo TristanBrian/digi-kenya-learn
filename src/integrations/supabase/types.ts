@@ -101,6 +101,39 @@ export type Database = {
         }
         Relationships: []
       }
+      announcements: {
+        Row: {
+          content: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          priority: string | null
+          published: boolean | null
+          target_audience: string | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          priority?: string | null
+          published?: boolean | null
+          target_audience?: string | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          priority?: string | null
+          published?: boolean | null
+          target_audience?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -133,6 +166,105 @@ export type Database = {
           status?: string | null
         }
         Relationships: []
+      }
+      exam_registrations: {
+        Row: {
+          exam_id: string
+          id: string
+          registered_at: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          exam_id: string
+          id?: string
+          registered_at?: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          exam_id?: string
+          id?: string
+          registered_at?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_registrations_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exam_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_registrations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_schedules: {
+        Row: {
+          created_at: string
+          end_time: string
+          exam_date: string
+          grade_level: string
+          id: string
+          max_registrations: number | null
+          registration_open: boolean | null
+          start_time: string
+          subject_id: string | null
+          term_id: string | null
+          title: string
+          venue: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_time: string
+          exam_date: string
+          grade_level: string
+          id?: string
+          max_registrations?: number | null
+          registration_open?: boolean | null
+          start_time: string
+          subject_id?: string | null
+          term_id?: string | null
+          title: string
+          venue?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_time?: string
+          exam_date?: string
+          grade_level?: string
+          id?: string
+          max_registrations?: number | null
+          registration_open?: boolean | null
+          start_time?: string
+          subject_id?: string | null
+          term_id?: string | null
+          title?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_schedules_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_schedules_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "academic_terms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fee_categories: {
         Row: {
@@ -583,6 +715,60 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      timetable_entries: {
+        Row: {
+          created_at: string
+          day_of_week: string
+          end_time: string
+          grade_level: string
+          id: string
+          lecturer_name: string | null
+          room: string | null
+          start_time: string
+          subject_id: string | null
+          term_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: string
+          end_time: string
+          grade_level: string
+          id?: string
+          lecturer_name?: string | null
+          room?: string | null
+          start_time: string
+          subject_id?: string | null
+          term_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: string
+          end_time?: string
+          grade_level?: string
+          id?: string
+          lecturer_name?: string | null
+          room?: string | null
+          start_time?: string
+          subject_id?: string | null
+          term_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timetable_entries_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timetable_entries_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "academic_terms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
