@@ -199,59 +199,21 @@ const AdminDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Load news/events - using type assertion since tables were just created
-      const { data: news } = await supabase
-        .from('news_events' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
+      const [newsRes, galleryRes, contactsRes, admissionsRes, paymentsRes, studentsRes] = await Promise.all([
+        supabase.from('news_events').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('gallery_images').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('contact_messages').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('admissions').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('payments').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('students').select('*').order('created_at', { ascending: false }).limit(20),
+      ]);
 
-      if (news) setNewsEvents(news as unknown as NewsEvent[]);
-
-      // Load gallery images
-      const { data: gallery } = await supabase
-        .from('gallery_images' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (gallery) setGalleryImages(gallery as unknown as GalleryImage[]);
-
-      // Load contact messages
-      const { data: contacts } = await supabase
-        .from('contact_messages' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (contacts) setContactMessages(contacts as unknown as ContactMessage[]);
-
-      // Load admissions
-      const { data: admissionsData } = await supabase
-        .from('admissions' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (admissionsData) setAdmissions(admissionsData as unknown as Admission[]);
-
-      // Load payments
-      const { data: paymentsData } = await supabase
-        .from('payments' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (paymentsData) setPayments(paymentsData as unknown as Payment[]);
-
-      // Load students
-      const { data: studentsData } = await supabase
-        .from('students')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (studentsData) setStudents(studentsData);
+      if (newsRes.data) setNewsEvents(newsRes.data as unknown as NewsEvent[]);
+      if (galleryRes.data) setGalleryImages(galleryRes.data as unknown as GalleryImage[]);
+      if (contactsRes.data) setContactMessages(contactsRes.data as unknown as ContactMessage[]);
+      if (admissionsRes.data) setAdmissions(admissionsRes.data as unknown as Admission[]);
+      if (paymentsRes.data) setPayments(paymentsRes.data as unknown as Payment[]);
+      if (studentsRes.data) setStudents(studentsRes.data);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -278,7 +240,7 @@ const AdminDashboard = () => {
 
       if (editingNews) {
         const { error } = await supabase
-          .from('news_events' as any)
+          .from('news_events')
           .update(newsData)
           .eq('id', editingNews.id);
 
@@ -290,7 +252,7 @@ const AdminDashboard = () => {
         });
       } else {
         const { error } = await supabase
-          .from('news_events' as any)
+          .from('news_events')
           .insert([newsData]);
 
         if (error) throw error;
@@ -341,7 +303,7 @@ const AdminDashboard = () => {
 
     try {
       const { error } = await supabase
-        .from('news_events' as any)
+        .from('news_events')
         .delete()
         .eq('id', id);
 
@@ -365,7 +327,7 @@ const AdminDashboard = () => {
   const updateContactStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from('contact_messages' as any)
+        .from('contact_messages')
         .update({ status })
         .eq('id', id);
 
@@ -389,7 +351,7 @@ const AdminDashboard = () => {
   const updateAdmissionStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from('admissions' as any)
+        .from('admissions')
         .update({ status })
         .eq('id', id);
 
