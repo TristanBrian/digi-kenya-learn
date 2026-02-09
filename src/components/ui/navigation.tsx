@@ -84,7 +84,7 @@ export function Navigation() {
           <Link to="/" className="flex items-center space-x-2">
             <GraduationCap className="h-8 w-8 text-primary" />
             <span className="font-display text-xl font-semibold text-primary">
-              DigiSchool
+              EAIC
             </span>
           </Link>
 

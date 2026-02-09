@@ -1,21 +1,21 @@
-import { Users, GraduationCap, MonitorSpeaker } from "lucide-react";
+import { Users, GraduationCap, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const reasons = [
   {
-    icon: Users,
-    title: "Small Class Sizes",
-    description: "Average 30 students — individual attention for every child"
-  },
-  {
     icon: GraduationCap,
-    title: "Experienced Teachers",
-    description: "Qualified educators & strong exam performance track record"
+    title: "Industry-Recognized Programs",
+    description: "TIVET-accredited technical and vocational training programs that lead to direct employment"
   },
   {
-    icon: MonitorSpeaker,
-    title: "Modern Facilities",
-    description: "ICT lab, sports facilities, and engaging after-school clubs"
+    icon: Heart,
+    title: "Faith-Integrated Learning",
+    description: "Christian values integrated into professional development since 1950"
+  },
+  {
+    icon: Users,
+    title: "Expert Instructors",
+    description: "Qualified professionals with real-world industry experience guiding every student"
   }
 ];
 
@@ -25,10 +25,10 @@ export function WhyChooseUsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Why Choose Us
+            Why EAIC
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover what makes our school the ideal place for your child's educational journey
+            Discover why EAIC is East Africa's premier technical and vocational institution
           </p>
         </div>
 

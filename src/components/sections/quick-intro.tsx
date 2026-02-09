@@ -4,10 +4,10 @@ export function QuickIntroSection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4">
           <p className="text-lg md:text-xl text-foreground leading-relaxed">
-            <span className="font-semibold text-primary">DigiSchool</span> pioneers digital education in Kenya, creating tech-savvy learners ready for tomorrow's world.
+            <span className="font-semibold text-primary">Eastern Africa Integrated College (EAIC)</span> transforms lives through faith-integrated technical and vocational education, preparing skilled professionals for the African job market.
           </p>
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            We blend cutting-edge technology with proven teaching methods for exceptional learning outcomes.
+            Since 1950, we've combined Christian values with industry-recognized TIVET programs, empowering graduates with practical skills and professional certifications.
           </p>
         </div>
       </div>

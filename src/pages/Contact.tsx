@@ -89,10 +89,10 @@ const Contact = () => {
         <section className="py-16 bg-gradient-hero">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Contact Us
+              Get in Touch
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Contact DigiSchool to schedule a visit or ask about admissions and fees
+              Contact Eastern Africa Integrated College to learn about our programs, apply, or schedule a campus visit
             </p>
           </div>
         </section>
@@ -123,8 +123,9 @@ const Contact = () => {
                         <div>
                           <h3 className="font-semibold text-foreground mb-2">Address</h3>
                           <p className="text-muted-foreground">
-                            Karen Road, Plot 123<br />
-                            Karen, Nairobi, Kenya
+                            ABC Imani Plaza, 4th Floor<br />
+                            Ngei Road<br />
+                            Machakos Town, Kenya
                           </p>
                         </div>
                       </div>
@@ -140,12 +141,12 @@ const Contact = () => {
                         <div>
                           <h3 className="font-semibold text-foreground mb-2">Phone</h3>
                           <p className="text-muted-foreground mb-2">
-                            <a href="tel:+254700123456" className="hover:text-accent transition-colors">
-                              +254 700 123 456
+                            <a href="tel:+254701234567" className="hover:text-accent transition-colors">
+                              +254 701 234 567
                             </a>
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Emergency: +254 700 654 321
+                            Office Hours: Monday-Friday 8AM-5PM
                           </p>
                         </div>
                       </div>
@@ -161,8 +162,8 @@ const Contact = () => {
                         <div>
                           <h3 className="font-semibold text-foreground mb-2">Email</h3>
                           <p className="text-muted-foreground">
-                            <a href="mailto:info@digischool.co.ke" className="hover:text-accent transition-colors">
-                              info@digischool.co.ke
+                            <a href="mailto:info@eaic.ac.ke" className="hover:text-accent transition-colors">
+                              info@eaic.ac.ke
                             </a>
                           </p>
                         </div>

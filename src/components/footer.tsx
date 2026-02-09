@@ -4,13 +4,13 @@ import { GraduationCap, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linke
 const footerLinks = {
   university: [
     { name: "About Us", href: "/about" },
-    { name: "Academics", href: "/academics" },
+    { name: "Programs", href: "/academics" },
     { name: "Admissions", href: "/admissions" },
     { name: "News & Events", href: "/news" },
   ],
   portals: [
     { name: "Student Portal", href: "/student" },
-    { name: "Admin Dashboard", href: "/admin" },
+    { name: "Staff Portal", href: "/admin" },
     { name: "Fee Structure", href: "/fees" },
     { name: "Photo Gallery", href: "/gallery" },
   ],
@@ -20,9 +20,9 @@ const footerLinks = {
     { name: "Sign In", href: "/auth" },
   ],
   contact: [
-    { icon: Phone, text: "+254 700 123 456" },
-    { icon: Mail, text: "info@digi-university.ac.ke" },
-    { icon: MapPin, text: "Karen, Nairobi, Kenya" },
+    { icon: Phone, text: "+254 701 234 567" },
+    { icon: Mail, text: "info@eaic.ac.ke" },
+    { icon: MapPin, text: "ABC Imani Plaza, Machakos, Kenya" },
   ],
 };
 
@@ -35,11 +35,11 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <GraduationCap className="h-8 w-8 text-accent" />
-              <span className="font-display text-xl font-semibold">DigiSchool</span>
+              <span className="font-display text-xl font-semibold">EAIC</span>
             </Link>
             <p className="text-primary-foreground/80 text-sm leading-relaxed mb-6 max-w-sm">
-              Empowering the next generation through excellence in education,
-              research, character development, and digital innovation.
+              Since 1950, transforming lives through faith-integrated technical and vocational education.
+              Preparing skilled professionals with industry-recognized certifications and Christian values.
             </p>
             <div className="flex space-x-4">
               <Facebook className="h-5 w-5 text-primary-foreground/60 hover:text-accent cursor-pointer transition-colors" />
@@ -49,9 +49,9 @@ export function Footer() {
             </div>
           </div>
 
-          {/* University Links */}
+          {/* College Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider">University</h3>
+            <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider">College</h3>
             <ul className="space-y-3">
               {footerLinks.university.map((link) => (
                 <li key={link.name}>

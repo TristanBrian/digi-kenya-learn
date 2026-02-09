@@ -5,21 +5,21 @@ import { GraduationCap, Heart, Users, Award } from "lucide-react";
 
 const teamMembers = [
   {
-    name: "Mrs. Sarah Wanjiku",
-    role: "Headteacher",
-    bio: "15+ years in primary education, passionate about holistic child development",
+    name: "Rev. Dr. Patrick Kipchoge",
+    role: "Principal",
+    bio: "20+ years in technical education leadership, doctorate in vocational studies",
     image: "/api/placeholder/150/150"
   },
   {
-    name: "Mr. John Kariuki",
-    role: "Deputy Head",
-    bio: "Mathematics specialist with expertise in curriculum development",
+    name: "Eng. Catherine Omondi",
+    role: "Head of ICT Programs",
+    bio: "Software engineer with 15 years in industry, specialized in certification programs",
     image: "/api/placeholder/150/150"
   },
   {
-    name: "Ms. Grace Muthoni",
-    role: "Head of ICT",
-    bio: "Computer science graduate, leading digital learning initiatives",
+    name: "Mr. Abraham Kipkemoi",
+    role: "Head of Business Programs",
+    bio: "MBA graduate, entrepreneur with expertise in professional development",
     image: "/api/placeholder/150/150"
   }
 ];
@@ -34,16 +34,16 @@ const About = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-                About DigiSchool
+                About EAIC
               </h1>
               <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-                Discover our mission, values, and the dedicated team committed to your child's success
+                Discover our heritage, mission to transform lives through technical education, and our vision for East Africa's future
               </p>
             </div>
           </div>
         </section>
 
-        {/* Headteacher Welcome */}
+        {/* Principal Welcome */}
         <section className="py-16 bg-background">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <Card className="shadow-card border-0">
@@ -56,21 +56,21 @@ const About = () => {
                   </div>
                   <div className="lg:col-span-2">
                     <h2 className="font-display text-3xl font-bold text-foreground mb-6">
-                      Headteacher's Welcome
+                      Principal's Welcome
                     </h2>
                     <div className="prose prose-lg text-muted-foreground space-y-4">
                       <p>
-                        Welcome to DigiSchool. We are committed to academic excellence and moral development in every child who walks through our doors.
+                        Welcome to Eastern Africa Integrated College. Since 1950, we've been transforming lives through faith-integrated technical and vocational education.
                       </p>
                       <p>
-                        Our dedicated staff nurture curiosity and individual growth in a safe, supportive environment where every student can thrive. We believe in developing not just academic skills, but also character, creativity, and critical thinking.
+                        We prepare skilled professionals ready for the African job market. Our curriculum combines international certifications with Christian values, ensuring our graduates are not just technically competent but also ethical leaders ready to impact their communities.
                       </p>
                       <p>
-                        Together, we're building the foundation for your child's bright future.
+                        Every student who graduates from EAIC carries the tools for professional success and the values for meaningful contribution to society.
                       </p>
                     </div>
                     <div className="mt-6">
-                      <p className="font-semibold text-primary">— Mrs. Sarah Wanjiku, Headteacher</p>
+                      <p className="font-semibold text-primary">— Principal, Eastern Africa Integrated College</p>
                     </div>
                   </div>
                 </div>

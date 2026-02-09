@@ -4,73 +4,73 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Users, Trophy, Microscope, Music, Palette, ArrowRight, Clock, Target, Award, Calendar, CheckCircle, Star } from "lucide-react";
+import { BookOpen, Users, Trophy, Microscope, Music, Palette, ArrowRight, Clock, Target, Award, Calendar, CheckCircle, Star, Heart } from "lucide-react";
 import { useState } from "react";
 
 const classLevels = [
   {
-    title: "Early Years (PP1-PP3)",
-    description: "Play-based foundations",
-    details: "Building social skills, basic literacy and numeracy through interactive play and discovery learning.",
-    icon: Users,
-    ageRange: "3-6 years",
-    subjects: ["Pre-Literacy", "Pre-Numeracy", "Creative Arts", "Physical Development", "Social Skills"],
-    highlights: ["Play-based learning", "Social development", "Basic motor skills", "Creative expression"]
-  },
-  {
-    title: "Lower Primary (Grade 1-4)",
-    description: "Literacy, numeracy, basics",
-    details: "Strengthening reading, writing, and mathematical foundations with creative problem-solving approaches.",
-    icon: BookOpen,
-    ageRange: "6-10 years",
-    subjects: ["English", "Mathematics", "Kiswahili", "Science & Technology", "Social Studies", "Creative Arts"],
-    highlights: ["Reading fluency", "Basic mathematics", "Scientific thinking", "Digital literacy"]
-  },
-  {
-    title: "Upper Primary (Grade 5-8)",
-    description: "Exam prep, STEM exposure",
-    details: "Advanced curriculum preparation for KCPE with focus on science, technology, and critical thinking skills.",
+    title: "Information & Communication Technology",
+    description: "Industry-leading ICT programs",
+    details: "Comprehensive training in computer systems, networking, software development, and cybersecurity. TIVET-accredited curriculum with hands-on lab experience and industry partnerships.",
     icon: Microscope,
-    ageRange: "10-14 years",
-    subjects: ["English", "Mathematics", "Kiswahili", "Science", "Social Studies", "Religious Education", "Life Skills"],
-    highlights: ["KCPE preparation", "Advanced STEM", "Leadership skills", "Critical thinking"]
+    ageRange: "Certificate & Diploma",
+    subjects: ["Computer Hardware", "Software Development", "Database Management", "Network Administration", "Cybersecurity", "IT Project Management"],
+    highlights: ["Microsoft & CompTIA certifications", "Real-world lab equipment", "Industry internships", "Job placement support"]
+  },
+  {
+    title: "Business & Entrepreneurship",
+    description: "Professional business training",
+    details: "Equip students with entrepreneurial skills, business management, and financial literacy. Prepare graduates for both employment and business ownership with practical case studies.",
+    icon: BookOpen,
+    ageRange: "Certificate & Diploma",
+    subjects: ["Business Management", "Accounting", "Marketing Strategy", "Human Resources", "Entrepreneurship", "Financial Planning"],
+    highlights: ["Accounting software training", "Business plan development", "HR practices", "Financial management"]
+  },
+  {
+    title: "Social Work & Community Development",
+    description: "Community-focused professional training",
+    details: "Train compassionate professionals to address social challenges in East Africa. Combines theoretical knowledge with practical community engagement and Christian values.",
+    icon: Users,
+    ageRange: "Certificate & Diploma",
+    subjects: ["Social Policy", "Community Engagement", "Counseling Skills", "Child Protection", "Development Projects", "Professional Ethics"],
+    highlights: ["Community placements", "Counseling certifications", "Field experience", "NGO partnerships"]
   }
 ];
 
 const curriculumAreas = [
   {
-    title: "Language & Literacy",
-    description: "Building strong communication foundations in English and Kiswahili",
-    icon: BookOpen,
-    skills: ["Reading comprehension", "Creative writing", "Public speaking", "Grammar & vocabulary"]
+    title: "Professional Competencies",
+    description: "Industry-recognized skills aligned with TIVET standards",
+    icon: Award,
+    skills: ["Technical expertise", "Industry certifications", "Practical competency", "Professional standards"]
   },
   {
-    title: "Mathematical Thinking",
-    description: "Developing logical reasoning and problem-solving abilities",
+    title: "Business Acumen",
+    description: "Entrepreneurial mindset and business management skills",
     icon: Target,
-    skills: ["Number concepts", "Algebraic thinking", "Geometry", "Data handling"]
+    skills: ["Business planning", "Financial literacy", "Market analysis", "Customer service"]
   },
   {
-    title: "Scientific Inquiry", 
-    description: "Hands-on exploration of natural and physical sciences",
+    title: "Christian Values & Ethics", 
+    description: "Moral and professional ethics integrated throughout curriculum",
+    icon: Heart,
+    skills: ["Professional integrity", "Ethical decision-making", "Community responsibility", "Leadership with purpose"]
+  },
+  {
+    title: "Practical Application",
+    description: "Hands-on experience through internships and real-world projects",
     icon: Microscope,
-    skills: ["Scientific method", "Observation & analysis", "Experimentation", "Environmental awareness"]
-  },
-  {
-    title: "Digital Citizenship",
-    description: "21st-century skills for the digital world",
-    icon: Trophy,
-    skills: ["Computer literacy", "Digital safety", "Coding basics", "Online research"]
+    skills: ["Work experience", "Project-based learning", "Industry partnerships", "Job readiness"]
   }
 ];
 
 const clubs = [
-  { name: "Science Club", icon: Microscope, description: "Hands-on experiments and discovery" },
-  { name: "Computer Club", icon: BookOpen, description: "Digital literacy and coding basics" },
-  { name: "Music & Drama", icon: Music, description: "Creative expression and performance" },
-  { name: "Art Club", icon: Palette, description: "Visual arts and creative projects" },
-  { name: "Sports", icon: Trophy, description: "Football, netball, and athletics" },
-  { name: "Debate Club", icon: Users, description: "Public speaking and critical thinking" }
+  { name: "Tech Innovation Club", icon: Microscope, description: "Latest technology and innovation projects" },
+  { name: "Entrepreneur Society", icon: BookOpen, description: "Business startup ideas and networking" },
+  { name: "Professional Development", icon: Trophy, description: "Career workshops and mentorship" },
+  { name: "Christian Fellowship", icon: Heart, description: "Faith-building and community service" },
+  { name: "Sports & Wellness", icon: Users, description: "Team building and physical fitness" },
+  { name: "Debate & Public Speaking", icon: Music, description: "Professional communication skills" }
 ];
 
 const Academics = () => {
@@ -87,40 +87,40 @@ const Academics = () => {
             <div className="text-center mb-12">
               <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium bg-white/10 text-white border-white/20">
                 <Award className="mr-2 h-4 w-4" />
-                CBC-Aligned Curriculum
+                TIVET-Accredited Programs
               </Badge>
               <h1 className="font-display text-4xl md:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
-                Academic Excellence<br />
+                Industry-Ready<br />
                 <span className="bg-gradient-to-r from-accent-light to-accent bg-clip-text text-transparent">
-                  Meets Innovation
+                  Professional Programs
                 </span>
               </h1>
               <p className="text-xl text-primary-foreground/90 max-w-4xl mx-auto leading-relaxed">
-                From Pre-Primary to Grade 8, our comprehensive curriculum builds strong foundations while fostering creativity, critical thinking, and character development
+                Quality technical and vocational training with international certifications, practical experience, and direct career pathways across East Africa
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
                 <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="h-6 w-6 text-white" />
+                  <Award className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">CBC Curriculum</h3>
-                <p className="text-white/80 text-sm">Government-approved competency-based learning</p>
+                <h3 className="font-semibold text-white mb-2">Certifications</h3>
+                <p className="text-white/80 text-sm">Internationally recognized credentials and TIVET accreditation</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
                 <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-6 w-6 text-white" />
+                  <Microscope className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">Small Classes</h3>
-                <p className="text-white/80 text-sm">Maximum 25 students per class for personalized attention</p>
+                <h3 className="font-semibold text-white mb-2">Hands-On Training</h3>
+                <p className="text-white/80 text-sm">Modern labs and industry partnerships for real-world experience</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
                 <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="h-6 w-6 text-white" />
+                  <Heart className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">Holistic Growth</h3>
-                <p className="text-white/80 text-sm">Academic, social, and emotional development</p>
+                <h3 className="font-semibold text-white mb-2">Values-Based</h3>
+                <p className="text-white/80 text-sm">Christian ethics and professional development integrated</p>
               </div>
             </div>
           </div>
@@ -131,10 +131,10 @@ const Academics = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-display text-4xl font-bold text-foreground mb-6">
-                Core Learning Areas
+                Our Educational Approach
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Our CBC-aligned curriculum focuses on developing competencies across key learning areas that prepare students for success in the 21st century
+                EAIC combines professional competencies, business acumen, Christian values, and practical work experience for complete graduate readiness
               </p>
             </div>
 
@@ -178,22 +178,22 @@ const Academics = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-display text-4xl font-bold text-foreground mb-6">
-                Progressive Learning Journey
+                Our Professional Programs
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Explore our carefully structured progression from Early Years through Grade 8, designed to build competencies at each developmental stage
+                Explore our TIVET-accredited programs designed to equip you with industry-recognized skills and certifications
               </p>
             </div>
 
             <Tabs defaultValue="0" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto mb-12">
+              <TabsList className="grid w-full grid-cols-3 max-w-3xl mx-auto mb-12">
                 {classLevels.map((level, index) => (
                   <TabsTrigger 
                     key={index} 
                     value={index.toString()}
                     className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
                   >
-                    {level.title.split(' (')[0]}
+                    {level.title.split(' &')[0]}
                   </TabsTrigger>
                 ))}
               </TabsList>

@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 export function HeroSection() {
   const [currentText, setCurrentText] = useState(0);
   const typewriterTexts = [
-    "Excellence in Digital Education",
-    "Preparing Future Leaders", 
-    "Innovation Meets Learning",
-    "Where Dreams Take Flight"
+    "Faith-Integrated Professional Excellence",
+    "Empowering East African Leaders", 
+    "TIVET Programs That Transform",
+    "Where Faith Meets Skill"
   ];
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <img
           src={heroImage}
-          alt="Modern digital learning at DigiSchool"
+          alt="Eastern Africa Integrated College - Professional learning environment"
           className="w-full h-full object-cover opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary-glow/60 to-accent/50" />
@@ -50,13 +50,13 @@ export function HeroSection() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm border border-accent/30 rounded-full px-4 py-2 mb-6 animate-fade-in">
             <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-xs sm:text-sm font-medium text-primary-foreground">Kenya's Leading Digital School</span>
+            <span className="text-xs sm:text-sm font-medium text-primary-foreground">Est. 1950 • Kenya's Premier TIVET College</span>
           </div>
           
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-primary-foreground mb-6 animate-fade-in leading-tight">
             Welcome to
             <span className="block bg-gradient-to-r from-accent via-accent-light to-accent bg-clip-text text-transparent mt-2">
-              DigiSchool
+              EAIC
             </span>
           </h1>
           
@@ -67,22 +67,22 @@ export function HeroSection() {
           </p>
           
           <p className="text-sm sm:text-base md:text-lg text-primary-foreground/80 mb-10 max-w-2xl mx-auto animate-slide-up font-medium">
-            Digital Learning • AI-Enhanced Education • Future-Ready Students
+            Technical Programs • Professional Certification • Faith-Based Values
           </p>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 animate-slide-up">
             <div className="flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2">
               <Zap className="w-4 h-4 text-accent" />
-              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Smart Classrooms</span>
+              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Industry Certifications</span>
             </div>
             <div className="flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2">
               <Users className="w-4 h-4 text-accent" />
-              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Expert Teachers</span>
+              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Expert Instructors</span>
             </div>
             <div className="flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2">
               <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Holistic Growth</span>
+              <span className="text-xs sm:text-sm font-medium text-primary-foreground">Faith-Centered Learning</span>
             </div>
           </div>
 
@@ -93,16 +93,16 @@ export function HeroSection() {
               onClick={() => window.location.href = '/admissions'}
             >
               <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-12 transition-transform" />
-              Enroll Today
+              Apply Now
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
               variant="outline" 
               size="lg"
               className="border-2 border-accent/80 bg-accent/10 backdrop-blur-sm text-accent hover:bg-accent hover:text-accent-foreground px-6 sm:px-10 py-4 sm:py-6 font-bold text-base sm:text-lg rounded-full transform hover:scale-105 transition-all duration-300 w-full sm:w-auto group"
-              onClick={() => window.location.href = '/fees'}
+              onClick={() => window.location.href = '/academics'}
             >
-              Pay School Fees
+              Explore Programs
             </Button>
             <Button 
               variant="ghost" 
@@ -110,7 +110,7 @@ export function HeroSection() {
               className="bg-primary-foreground/10 backdrop-blur-sm text-primary-foreground hover:bg-primary-foreground hover:text-primary px-6 sm:px-10 py-4 sm:py-6 font-bold text-base sm:text-lg rounded-full transform hover:scale-105 transition-all duration-300 border-2 border-primary-foreground/40 w-full sm:w-auto group"
               onClick={() => window.location.href = '/contact'}
             >
-              Book a Visit
+              Contact Us
             </Button>
           </div>
 
@@ -122,7 +122,7 @@ export function HeroSection() {
               className="bg-primary-foreground/5 backdrop-blur-sm text-primary-foreground hover:bg-primary-foreground/10 px-6 py-3 rounded-full transition-all duration-300 group"
             >
               <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-              Watch Virtual Tour
+              Learn About Our Mission
             </Button>
           </div>
         </div>
