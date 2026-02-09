@@ -2,16 +2,50 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+// Create a safe mock client for when Supabase is unavailable
+const createMockClient = () => ({
   auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
+    getSession: async () => ({ data: { session: null } }),
+    signOut: async () => ({ error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    signInWithPassword: async () => ({ data: null, error: new Error('Demo mode') })
+  },
+  from: () => ({
+    select: () => ({
+      eq: () => ({
+        maybeSingle: async () => ({ data: null, error: null })
+      }),
+      order: () => ({
+        limit: async () => ({ data: [], error: null })
+      })
+    })
+  })
 });
+
+let supabase: any = createMockClient();
+
+if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+  try {
+    supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        storage: typeof localStorage !== 'undefined' ? localStorage : undefined,
+        persistSession: true,
+        autoRefreshToken: true,
+      }
+    });
+    console.log('[v0] Supabase client initialized successfully');
+  } catch (error) {
+    console.error('[v0] Supabase initialization error:', error);
+    supabase = createMockClient();
+  }
+} else {
+  console.warn('[v0] Supabase credentials not found - using demo mode');
+}
+
+export { supabase };
