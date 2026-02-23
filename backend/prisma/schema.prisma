@@ -1,0 +1,244 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String     @id @default(cuid())
+  email            String     @unique
+  password         String
+  role             Role       @default(STUDENT)
+  firstName        String
+  lastName         String
+  phoneNumber      String?
+  isActive         Boolean    @default(true)
+  lastLogin        DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  student          Student?
+  staff            Staff?
+  announcements    Announcement[]
+  messagesSent     Message[]  @relation("SentMessages")
+  messagesReceived Message[]  @relation("ReceivedMessages")
+}
+
+model Student {
+  id              String         @id @default(cuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id])
+  admissionNumber String         @unique
+  nationalID      String?        @unique
+  programId       String
+  program         Program        @relation(fields: [programId], references: [id])
+  yearOfStudy     Int
+  semester        Int
+  enrollmentDate  DateTime
+  graduationDate  DateTime?
+  profilePhoto    String?
+
+  courses         Enrollment[]
+  feeStatements   FeeStatement[]
+  payments        Payment[]
+  documents       Document[]
+}
+
+model Staff {
+  id           String      @id @default(cuid())
+  userId       String      @unique
+  user         User        @relation(fields: [userId], references: [id])
+  staffNumber  String      @unique
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id])
+  designation  String
+  hireDate     DateTime
+}
+
+model Program {
+  id           String      @id @default(cuid())
+  name         String
+  code         String      @unique
+  duration     Int
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id])
+  students     Student[]
+  courses      Course[]
+}
+
+model Department {
+  id       String    @id @default(cuid())
+  name     String
+  code     String    @unique
+  faculty  String
+  programs Program[]
+  staff    Staff[]
+}
+
+model Course {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  name        String
+  credits     Int
+  description String?
+  programId   String
+  program     Program         @relation(fields: [programId], references: [id])
+  semester    Int
+  year        Int
+  isActive    Boolean         @default(true)
+
+  enrollments Enrollment[]
+  grades      Grade[]
+  schedules   ClassSchedule[]
+}
+
+model Enrollment {
+  id           String           @id @default(cuid())
+  studentId    String
+  student      Student          @relation(fields: [studentId], references: [id])
+  courseId     String
+  course       Course           @relation(fields: [courseId], references: [id])
+  academicYear String
+  semester     Int
+  status       EnrollmentStatus @default(ENROLLED)
+  enrolledAt   DateTime         @default(now())
+  grade        Grade?
+}
+
+model Grade {
+  id           String     @id @default(cuid())
+  enrollmentId String     @unique
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+  marks        Float
+  letterGrade  String
+  points       Float
+  remarks      String?
+  gradedBy     String
+  gradedAt     DateTime   @default(now())
+}
+
+model ClassSchedule {
+  id         String   @id @default(cuid())
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id])
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  venue      String
+  lecturerId String?
+  lecturer   Staff?   @relation(fields: [lecturerId], references: [id])
+}
+
+model FeeStatement {
+  id           String     @id @default(cuid())
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id])
+  academicYear String
+  semester     Int
+  totalFees    Float
+  amountPaid   Float      @default(0)
+  balance      Float
+  dueDate      DateTime
+  status       FeeStatus  @default(PENDING)
+  payments     Payment[]
+}
+
+model Payment {
+  id              String         @id @default(cuid())
+  feeStatementId  String
+  feeStatement    FeeStatement   @relation(fields: [feeStatementId], references: [id])
+  amount          Float
+  paymentMethod   String
+  transactionCode String?
+  status          PaymentStatus  @default(PENDING)
+  paidAt          DateTime
+  receiptUrl      String?
+}
+
+model Announcement {
+  id             String     @id @default(cuid())
+  title          String
+  content        String
+  targetRole     Role[]
+  targetPrograms String[]
+  authorId       String
+  author         User       @relation(fields: [authorId], references: [id])
+  priority       Priority   @default(NORMAL)
+  attachments    String[]
+  expiresAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Document {
+  id         String       @id @default(cuid())
+  studentId  String
+  student    Student      @relation(fields: [studentId], references: [id])
+  type       DocumentType
+  url        String
+  verified   Boolean      @default(false)
+  verifiedBy String?
+  verifiedAt DateTime?
+  uploadedAt DateTime     @default(now())
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  recipientId String
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  subject     String
+  body        String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  STUDENT
+  LECTURER
+  REGISTRAR
+  FINANCE_OFFICER
+  ADMIN
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  DROPPED
+  COMPLETED
+  PENDING
+}
+
+enum FeeStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum DocumentType {
+  NATIONAL_ID
+  KCSE_CERTIFICATE
+  BIRTH_CERTIFICATE
+  PASSPORT_PHOTO
+  ADMISSION_LETTER
+  OTHER
+}
+
